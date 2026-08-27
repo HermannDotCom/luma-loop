@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   FlatList,
-  Linking,
+  Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -24,7 +25,6 @@ import { accuracy, recordRunStart, recordTap } from "@/lib/game/stats";
 import type { GameMode, GameState, PlayerProfile, RunStatus } from "@/lib/game/types";
 
 const AMBIENT_AUDIO_URL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663253463242/vrBHtdJuieNHcUuN.mp3";
-const PRIVACY_URL = "https://github.com/HermannDotCom/luma-loop/blob/main/PRIVACY.md";
 const THEME_EFFECTS = {
   "orbit-iris": { orbitWidth: 2, dash: "", halo: 18, particleAngles: [] as number[] },
   "orbit-daybreak": { orbitWidth: 3, dash: "5 5", halo: 23, particleAngles: [0.38, 1.95, 4.4] },
@@ -66,6 +66,7 @@ export function LumaLoopGame() {
   const [playfieldSize, setPlayfieldSize] = useState(320);
   const [burst, setBurst] = useState<Burst>("idle");
   const [levelFlash, setLevelFlash] = useState<string | null>(null);
+  const [privacyVisible, setPrivacyVisible] = useState(false);
   const orbitAngleRef = useRef(0);
   const frameRef = useRef<number | null>(null);
   const timestampRef = useRef<number | null>(null);
@@ -326,14 +327,30 @@ export function LumaLoopGame() {
           </View>
           <View style={styles.settingsSpacer} />
           <PrimaryButton label="RETOUR" onPress={() => setStatus("home")} secondary />
-          <Pressable
-            accessibilityRole="link"
-            accessibilityLabel="Lire la politique de confidentialité"
-            onPress={() => void Linking.openURL(PRIVACY_URL)}
-            style={({ pressed }) => [styles.privacyLink, pressed && styles.settingsPressed]}
-          >
+          <Pressable accessibilityRole="button" accessibilityLabel="Lire la politique de confidentialité" onPress={() => setPrivacyVisible(true)} style={({ pressed }) => [styles.privacyLink, pressed && styles.settingsPressed]}>
             <Text style={styles.privacyLinkText}>Confidentialité</Text>
           </Pressable>
+          <Modal animationType="slide" transparent visible={privacyVisible} onRequestClose={() => setPrivacyVisible(false)} statusBarTranslucent>
+            <View style={styles.modalScrim}>
+              <View style={styles.privacySheet}>
+                <View style={styles.privacyHeader}><View><Text style={styles.privacyKicker}>LUMA LOOP</Text><Text style={styles.privacyTitle}>Confidentialité</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Fermer la politique de confidentialité" onPress={() => setPrivacyVisible(false)} style={({ pressed }) => [styles.modalClose, pressed && styles.settingsPressed]}><Text style={styles.modalCloseText}>×</Text></Pressable></View>
+                <ScrollView contentContainerStyle={styles.privacyContent} showsVerticalScrollIndicator={false}>
+                  <Text style={styles.privacyDate}>Dernière mise à jour : 27 août 2026</Text>
+                  <Text style={styles.privacyParagraph}>Luma Loop est un jeu de synchronisation jouable sans compte. Cette version ne contient ni publicité, ni achat intégré, ni profil en ligne, ni outil d’analytique tiers.</Text>
+                  <Text style={styles.privacyHeading}>Données traitées</Text>
+                  <Text style={styles.privacyParagraph}>Le meilleur score, les statistiques et les préférences de confort sont enregistrés uniquement sur votre appareil. Le développeur ne reçoit pas ces données et elles ne sont pas synchronisées vers un serveur.</Text>
+                  <Text style={styles.privacyParagraph}>Lorsque le son est activé, l’application demande un fichier audio statique depuis son hébergement. Cette requête peut créer des journaux techniques de connexion chez l’hébergeur, comme une adresse IP et des informations standard de navigateur ou d’appareil.</Text>
+                  <Text style={styles.privacyHeading}>Vos choix</Text>
+                  <Text style={styles.privacyParagraph}>Vous pouvez désactiver le son, les vibrations et le contraste renforcé dans les réglages. La désinstallation de Luma Loop supprime les données locales associées sur l’appareil.</Text>
+                  <Text style={styles.privacyHeading}>Évolutions</Text>
+                  <Text style={styles.privacyParagraph}>Cette version ne diffuse aucune publicité et ne contient pas de SDK publicitaire. Si cela change, cette politique et les déclarations de confidentialité des stores seront mises à jour avant publication.</Text>
+                  <Text style={styles.privacyHeading}>Contact</Text>
+                  <Text style={styles.privacyParagraph}>Pour toute question relative à cette politique, utilisez le contact d’assistance indiqué sur la fiche de Luma Loop dans votre store.</Text>
+                </ScrollView>
+                <PrimaryButton label="J’AI COMPRIS" onPress={() => setPrivacyVisible(false)} />
+              </View>
+            </View>
+          </Modal>
         </View>
       </SafeAreaView>
     );
@@ -463,6 +480,7 @@ const styles = StyleSheet.create({
   tutorialCard: { alignSelf: "center", maxWidth: 300, paddingHorizontal: 15, paddingVertical: 9, borderRadius: 14, borderWidth: 1, borderColor: "#6B51AD", backgroundColor: "#171330" }, tutorialEyebrow: { color: "#43F3C5", fontSize: 8, fontWeight: "900", letterSpacing: 1.7, textAlign: "center" }, tutorialText: { color: "#F4F7FF", fontSize: 12, lineHeight: 17, fontWeight: "700", textAlign: "center", marginTop: 3 },
   settingsScreen: { flex: 1, padding: 28 }, eyebrow: { color: "#43F3C5", fontSize: 11, fontWeight: "900", letterSpacing: 2.7 }, settingsTitle: { color: "#F4F7FF", fontSize: 40, fontWeight: "800", letterSpacing: -1, marginTop: 8 }, settingsSubtitle: { color: "#AAA7C7", fontSize: 16, lineHeight: 23, marginTop: 10, maxWidth: 280 }, settingsCard: { backgroundColor: "#141733", borderRadius: 22, marginTop: 34, paddingHorizontal: 18, borderWidth: 1, borderColor: "#342F52" }, settingRow: { minHeight: 68, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, settingLabel: { color: "#E5E3F4", fontSize: 16, fontWeight: "700" }, divider: { height: 1, backgroundColor: "#302B4B" }, settingsSpacer: { flex: 1 },
   privacyLink: { alignSelf: "center", paddingHorizontal: 18, paddingTop: 17, paddingBottom: 4 }, privacyLinkText: { color: "#AAA7C7", fontSize: 13, fontWeight: "700", textDecorationLine: "underline" },
+  modalScrim: { flex: 1, backgroundColor: "rgba(3, 4, 12, 0.78)", justifyContent: "flex-end" }, privacySheet: { maxHeight: "88%", minHeight: 480, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 24, backgroundColor: "#11142B", borderTopLeftRadius: 28, borderTopRightRadius: 28, borderWidth: 1, borderColor: "#3D3761" }, privacyHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", borderBottomWidth: 1, borderBottomColor: "#2C2946", paddingBottom: 15 }, privacyKicker: { color: "#43F3C5", fontSize: 9, letterSpacing: 2.1, fontWeight: "900" }, privacyTitle: { color: "#F4F7FF", fontSize: 26, fontWeight: "800", letterSpacing: -0.4, marginTop: 3 }, modalClose: { width: 38, height: 38, borderRadius: 19, alignItems: "center", justifyContent: "center", backgroundColor: "#24203B", borderWidth: 1, borderColor: "#4A4567" }, modalCloseText: { color: "#F4F7FF", fontSize: 25, lineHeight: 27, fontWeight: "300" }, privacyContent: { paddingVertical: 18, gap: 12 }, privacyDate: { color: "#817C9C", fontSize: 11, fontStyle: "italic", marginBottom: 3 }, privacyHeading: { color: "#43F3C5", fontSize: 13, fontWeight: "900", letterSpacing: 1.1, marginTop: 7 }, privacyParagraph: { color: "#D7D4EC", fontSize: 14, lineHeight: 21 },
   collectionList: { paddingHorizontal: 24, paddingTop: 22, paddingBottom: 26 }, collectionTitle: { color: "#F4F7FF", fontSize: 38, letterSpacing: -1, fontWeight: "800", marginTop: 8 }, collectionSubtitle: { color: "#AAA7C7", fontSize: 15, lineHeight: 22, marginTop: 9, maxWidth: 310 }, collectionScore: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", borderRadius: 18, backgroundColor: "#141733", borderWidth: 1, borderColor: "#342F52", paddingHorizontal: 16, paddingVertical: 14, marginTop: 22 }, collectionScoreLabel: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.8, fontWeight: "900" }, collectionScoreValue: { color: "#FFD166", fontSize: 28, fontWeight: "900" }, collectionSection: { color: "#817C9C", fontSize: 10, letterSpacing: 2, fontWeight: "900", marginTop: 26, marginBottom: 10 }, themeCard: { minHeight: 78, borderRadius: 18, borderWidth: 1, borderColor: "#342F52", backgroundColor: "#141733", flexDirection: "row", alignItems: "center", paddingHorizontal: 12, marginBottom: 10 }, themeCardEquipped: { borderColor: "#43F3C5", backgroundColor: "#152842" }, themeCardLocked: { opacity: 0.52 }, themeSwatch: { width: 46, height: 46, borderRadius: 23, alignItems: "center", justifyContent: "center" }, themeSwatchInner: { width: 29, height: 29, borderRadius: 15, borderWidth: 3, backgroundColor: "#090B1A" }, themeCopy: { flex: 1, paddingLeft: 11 }, themeName: { color: "#F4F7FF", fontSize: 15, fontWeight: "800" }, themeDescription: { color: "#AAA7C7", fontSize: 11, lineHeight: 16, marginTop: 2 }, themeBadge: { borderRadius: 10, borderWidth: 1, borderColor: "#4B4567", paddingHorizontal: 8, paddingVertical: 5 }, themeBadgeEquipped: { borderColor: "#43F3C5", backgroundColor: "#193E3A" }, themeBadgeText: { color: "#AAA7C7", fontSize: 8, letterSpacing: 1, fontWeight: "900" }, themeBadgeTextEquipped: { color: "#43F3C5" }, collectionFooter: { marginTop: 9 },
   endScreen: { flex: 1, paddingHorizontal: 28, paddingTop: 58, paddingBottom: 24, alignItems: "center" }, endTitle: { color: "#F4F7FF", fontSize: 36, letterSpacing: -0.8, fontWeight: "800", marginTop: 9, textAlign: "center" }, endScoreBubble: { width: 176, height: 176, borderRadius: 88, backgroundColor: "#141733", borderWidth: 2, borderColor: "#8B5CF6", alignItems: "center", justifyContent: "center", marginTop: 44, shadowColor: "#8B5CF6", shadowOpacity: 0.36, shadowRadius: 24, elevation: 7 }, endScore: { color: "#FFD166", fontSize: 54, fontWeight: "900", letterSpacing: 1 }, endScoreLabel: { color: "#AAA7C7", fontSize: 10, fontWeight: "900", letterSpacing: 2.4, marginTop: 1 }, endHint: { color: "#AAA7C7", fontSize: 15, lineHeight: 23, marginTop: 28, textAlign: "center" }, streakCaption: { color: "#43F3C5", fontSize: 10, letterSpacing: 1.6, fontWeight: "900", marginTop: 12 }, streakCalendar: { flexDirection: "row", gap: 9, marginTop: 10 }, calendarDay: { alignItems: "center", gap: 5 }, calendarLabel: { color: "#817C9C", fontSize: 9, fontWeight: "800" }, calendarLabelToday: { color: "#F4F7FF" }, calendarDot: { width: 19, height: 19, borderRadius: 10, backgroundColor: "#2C2844", borderWidth: 1, borderColor: "#3F395C", alignItems: "center", justifyContent: "center" }, calendarDotComplete: { backgroundColor: "#43F3C5", borderColor: "#43F3C5" }, calendarDotToday: { borderColor: "#FFD166" }, calendarTick: { color: "#09211F", fontSize: 11, fontWeight: "900" }, endActions: { width: "100%", gap: 12, marginTop: "auto" },
   pauseScreen: { flex: 1, paddingHorizontal: 28, paddingTop: 58, paddingBottom: 24, alignItems: "center" }, pauseScorePanel: { width: "100%", marginTop: 52, paddingVertical: 27, backgroundColor: "#141733", borderRadius: 22, borderWidth: 1, borderColor: "#342F52", alignItems: "center" }, pauseScoreLabel: { color: "#AAA7C7", fontSize: 10, letterSpacing: 2.3, fontWeight: "900" }, pauseScore: { color: "#FFD166", fontSize: 44, fontWeight: "900", marginTop: 5 },

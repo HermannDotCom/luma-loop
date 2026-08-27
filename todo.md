@@ -43,3 +43,6 @@
 - [x] Ajouter une première prise en main interactive pour les nouveaux joueurs.
 - [x] Ajouter un objectif de retour simple, sans notification ni compte utilisateur.
 - [x] Finaliser les métadonnées de publication et les éléments nécessaires à la fiche store.
+- [x] Remplacer le lien GitHub de confidentialité par une modale intégrée.
+- [x] Afficher la politique de confidentialité dans une fenêtre accessible et refermable.
+- [x] Tester le nouveau parcours de confidentialité sans navigation externe.
