@@ -23,6 +23,8 @@ pnpm lint
 
 Le moteur de jeu vit dans `lib/game/engine.ts` et ne dépend pas de React Native. Le record et les réglages de confort sont stockés localement via AsyncStorage. L’interface est rendue avec React Native, `react-native-svg` et des styles statiques; elle reste verrouillée au format portrait.
 
+La politique de confidentialité du MVP est disponible dans [`PRIVACY.md`](./PRIVACY.md). Avant une soumission de store, hébergez ce texte sur une URL HTTPS stable et renseignez cette URL dans les fiches App Store Connect et Play Console.
+
 La base d’évolution se trouve dans `lib/game/catalog.ts`. Elle définit un inventaire et les cosmétiques équipés, mais n’expose ni boutique, ni paiement, ni monnaie dans ce MVP. Une intégration ultérieure pourra synchroniser les achats validés avec l’inventaire, ajouter des éléments `member` au catalogue et définir les avantages de l’abonnement sans toucher aux règles de jeu.
 
 ## Build Android et iOS

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  Linking,
   Pressable,
   StyleSheet,
   Switch,
@@ -17,6 +18,7 @@ import { DEFAULT_PROFILE, loadProfile, saveProfile } from "@/lib/game/profile";
 import type { GameState, PlayerProfile, RunStatus } from "@/lib/game/types";
 
 const AMBIENT_AUDIO_URL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663253463242/vrBHtdJuieNHcUuN.mp3";
+const PRIVACY_URL = "https://github.com/HermannDotCom/luma-loop/blob/main/PRIVACY.md";
 
 type Burst = "idle" | "hit" | "miss";
 
@@ -247,6 +249,14 @@ export function LumaLoopGame() {
           </View>
           <View style={styles.settingsSpacer} />
           <PrimaryButton label="RETOUR" onPress={() => setStatus("home")} secondary />
+          <Pressable
+            accessibilityRole="link"
+            accessibilityLabel="Lire la politique de confidentialité"
+            onPress={() => void Linking.openURL(PRIVACY_URL)}
+            style={({ pressed }) => [styles.privacyLink, pressed && styles.settingsPressed]}
+          >
+            <Text style={styles.privacyLinkText}>Confidentialité</Text>
+          </Pressable>
         </View>
       </SafeAreaView>
     );
@@ -321,6 +331,7 @@ const styles = StyleSheet.create({
   gameScreen: { flex: 1, paddingHorizontal: 24, paddingTop: 10, paddingBottom: 18 }, gameHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 60 }, hudLabel: { color: "#8C88A9", fontSize: 10, letterSpacing: 2, fontWeight: "800" }, hudScore: { color: "#F4F7FF", fontSize: 29, lineHeight: 32, fontWeight: "800", letterSpacing: 1 }, lives: { flexDirection: "row", gap: 7, alignItems: "center" }, petal: { width: 15, height: 20, borderRadius: 12, transform: [{ rotate: "35deg" }] }, petalActive: { backgroundColor: "#FF6B8A", shadowColor: "#FF6B8A", shadowOpacity: 0.8, shadowRadius: 5 }, petalLost: { backgroundColor: "#302A46" }, pauseButton: { width: 46, height: 46, borderRadius: 23, borderWidth: 1, borderColor: "#3B365E", backgroundColor: "#141733", alignItems: "center", justifyContent: "center" }, pauseBars: { flexDirection: "row", gap: 5 }, pauseBar: { width: 4, height: 15, borderRadius: 2, backgroundColor: "#D7D4EC" },
   comboLine: { height: 34, alignItems: "center", justifyContent: "center" }, comboText: { color: "#FFD166", fontSize: 12, fontWeight: "900", letterSpacing: 1.7 }, comboPrompt: { color: "#817C9C", fontSize: 13 }, gameFieldWrap: { flex: 1, alignItems: "center", justifyContent: "center" }, gameInstruction: { flexDirection: "row", alignItems: "center", alignSelf: "center", gap: 8, paddingVertical: 10 }, instructionDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#FFD166" }, instructionText: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.1, fontWeight: "800", textAlign: "center" },
   settingsScreen: { flex: 1, padding: 28 }, eyebrow: { color: "#43F3C5", fontSize: 11, fontWeight: "900", letterSpacing: 2.7 }, settingsTitle: { color: "#F4F7FF", fontSize: 40, fontWeight: "800", letterSpacing: -1, marginTop: 8 }, settingsSubtitle: { color: "#AAA7C7", fontSize: 16, lineHeight: 23, marginTop: 10, maxWidth: 280 }, settingsCard: { backgroundColor: "#141733", borderRadius: 22, marginTop: 34, paddingHorizontal: 18, borderWidth: 1, borderColor: "#342F52" }, settingRow: { minHeight: 68, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, settingLabel: { color: "#E5E3F4", fontSize: 16, fontWeight: "700" }, divider: { height: 1, backgroundColor: "#302B4B" }, settingsSpacer: { flex: 1 },
+  privacyLink: { alignSelf: "center", paddingHorizontal: 18, paddingTop: 17, paddingBottom: 4 }, privacyLinkText: { color: "#AAA7C7", fontSize: 13, fontWeight: "700", textDecorationLine: "underline" },
   endScreen: { flex: 1, paddingHorizontal: 28, paddingTop: 58, paddingBottom: 24, alignItems: "center" }, endTitle: { color: "#F4F7FF", fontSize: 36, letterSpacing: -0.8, fontWeight: "800", marginTop: 9, textAlign: "center" }, endScoreBubble: { width: 176, height: 176, borderRadius: 88, backgroundColor: "#141733", borderWidth: 2, borderColor: "#8B5CF6", alignItems: "center", justifyContent: "center", marginTop: 44, shadowColor: "#8B5CF6", shadowOpacity: 0.36, shadowRadius: 24, elevation: 7 }, endScore: { color: "#FFD166", fontSize: 54, fontWeight: "900", letterSpacing: 1 }, endScoreLabel: { color: "#AAA7C7", fontSize: 10, fontWeight: "900", letterSpacing: 2.4, marginTop: 1 }, endHint: { color: "#AAA7C7", fontSize: 15, lineHeight: 23, marginTop: 28, textAlign: "center" }, endActions: { width: "100%", gap: 12, marginTop: "auto" },
   pauseScreen: { flex: 1, paddingHorizontal: 28, paddingTop: 58, paddingBottom: 24, alignItems: "center" }, pauseScorePanel: { width: "100%", marginTop: 52, paddingVertical: 27, backgroundColor: "#141733", borderRadius: 22, borderWidth: 1, borderColor: "#342F52", alignItems: "center" }, pauseScoreLabel: { color: "#AAA7C7", fontSize: 10, letterSpacing: 2.3, fontWeight: "900" }, pauseScore: { color: "#FFD166", fontSize: 44, fontWeight: "900", marginTop: 5 },
 });

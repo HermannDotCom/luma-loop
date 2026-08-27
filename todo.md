@@ -13,3 +13,6 @@
 - [x] Créer, initialiser et alimenter le dépôt GitHub public HermannDotCom/luma-loop.
 - [x] Écrire des tests unitaires déterministes et effectuer les contrôles TypeScript/lint.
 - [x] Corriger les défauts détectés et préparer la livraison du MVP.
+- [x] Préparer la checklist de conformité Play Store et App Store du MVP.
+- [x] Évaluer le modèle publicitaire et son impact sur la rétention du jeu.
+- [x] Documenter une intégration future de publicités récompensées, sans l’activer dans cette version.
