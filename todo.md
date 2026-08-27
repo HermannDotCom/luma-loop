@@ -78,3 +78,5 @@
 - [x] Reporter la préparation iOS jusqu’à l’obtention d’un accès Apple Developer pour Flash Digital SAS.
 - [x] Évaluer le modèle de monétisation publicitaire adapté à Luma Loop.
 - [x] Produire un prévisionnel de revenus publicitaires prudent avec hypothèses et scénarios traçables.
+- [x] Identifier des comparables publics de jeux arcade/casual lancés par de petits éditeurs.
+- [x] Évaluer les chances de revenus de Luma Loop et définir les seuils de validation réalistes.
