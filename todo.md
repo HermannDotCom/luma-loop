@@ -24,3 +24,7 @@
 - [x] Créer des thèmes d’orbite déblocables par record atteint.
 - [x] Ajouter un écran de collection permettant d’équiper un thème débloqué.
 - [x] Tester les conditions de défi, de déblocage et d’équipement des thèmes.
+- [x] Ajouter une série de jours consécutifs pour les défis quotidiens.
+- [x] Créer un mode entraînement sans vies ni fin de partie.
+- [x] Ajouter des effets visuels dédiés aux cinq thèmes d’orbite.
+- [x] Tester la persistance des séries, le mode entraînement et les thèmes enrichis.

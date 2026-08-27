@@ -15,6 +15,19 @@ export type DailyProgress = {
   completed: boolean;
 };
 
+export type DailyStreak = {
+  current: number;
+  best: number;
+  lastCompletedDate: string | null;
+};
+
+export type StreakCalendarDay = {
+  key: string;
+  label: string;
+  completed: boolean;
+  today: boolean;
+};
+
 const DAILY_TEMPLATES: Omit<DailyChallenge, "id">[] = [
   { title: "Éclats précis", description: "Réalisez 3 touches Parfait", target: 3, kind: "perfect" },
   { title: "Rythme stable", description: "Réussissez 12 passages", target: 12, kind: "hits" },
@@ -53,4 +66,40 @@ export function advanceDailyProgress(progress: DailyProgress, challenge: DailyCh
   if (progress.completed || increment <= 0) return progress;
   const value = Math.min(challenge.target, progress.value + increment);
   return { ...progress, value, completed: value >= challenge.target };
+}
+
+export const EMPTY_DAILY_STREAK: DailyStreak = {
+  current: 0,
+  best: 0,
+  lastCompletedDate: null,
+};
+
+function dayNumber(dateKey: string): number {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return Date.UTC(year, month - 1, day) / 86_400_000;
+}
+
+export function advanceDailyStreak(streak: DailyStreak | undefined, completedDate: string): DailyStreak {
+  const current = streak ?? EMPTY_DAILY_STREAK;
+  if (current.lastCompletedDate === completedDate) return current;
+  const consecutive = current.lastCompletedDate !== null && dayNumber(completedDate) - dayNumber(current.lastCompletedDate) === 1;
+  const nextCurrent = consecutive ? current.current + 1 : 1;
+  return { current: nextCurrent, best: Math.max(current.best, nextCurrent), lastCompletedDate: completedDate };
+}
+
+export function getStreakCalendar(streak: DailyStreak | undefined, date = new Date()): StreakCalendarDay[] {
+  const current = streak ?? EMPTY_DAILY_STREAK;
+  const todayKey = getDateKey(date);
+  return Array.from({ length: 7 }, (_, index) => {
+    const day = new Date(date);
+    day.setDate(date.getDate() - (6 - index));
+    const key = getDateKey(day);
+    const distanceFromLast = current.lastCompletedDate ? dayNumber(current.lastCompletedDate) - dayNumber(key) : Infinity;
+    return {
+      key,
+      label: new Intl.DateTimeFormat("fr-FR", { weekday: "narrow" }).format(day).toUpperCase(),
+      completed: distanceFromLast >= 0 && distanceFromLast < current.current,
+      today: key === todayKey,
+    };
+  });
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { DEFAULT_COSMETICS, DEFAULT_INVENTORY, isOrbitThemeUnlocked, ORBIT_THEMES } from "../lib/game/catalog";
-import { advanceDailyProgress, emptyDailyProgress, getDailyChallenge } from "../lib/game/daily";
+import { advanceDailyProgress, advanceDailyStreak, emptyDailyProgress, getDailyChallenge, getStreakCalendar } from "../lib/game/daily";
 import { angularDistance, createInitialState, getDifficulty, resolveTap, TAU } from "../lib/game/engine";
 
 describe("Luma Loop game engine", () => {
@@ -28,6 +28,13 @@ describe("Luma Loop game engine", () => {
     const end = resolveTap(state, missAngle);
     expect(end.finished).toBe(true);
     expect(end.state.lives).toBe(0);
+  });
+
+  it("keeps every life and never ends a training run after a miss", () => {
+    const state = createInitialState(4, "training");
+    const miss = resolveTap(state, state.gateAngle + Math.PI);
+    expect(miss.state.lives).toBe(3);
+    expect(miss.finished).toBe(false);
   });
 
   it("changes to visible levels with a narrower but still readable success window", () => {
@@ -71,5 +78,25 @@ describe("Luma Loop game engine", () => {
     expect(dailyTheme).toBeDefined();
     expect(isOrbitThemeUnlocked(dailyTheme!, 0, [])).toBe(false);
     expect(isOrbitThemeUnlocked(dailyTheme!, 0, ["orbit-daybreak"])).toBe(true);
+  });
+
+  it("counts a daily streak once per day and resets it after a gap", () => {
+    const first = advanceDailyStreak(undefined, "2026-08-20");
+    const repeated = advanceDailyStreak(first, "2026-08-20");
+    const second = advanceDailyStreak(first, "2026-08-21");
+    const afterGap = advanceDailyStreak(second, "2026-08-23");
+    expect(first.current).toBe(1);
+    expect(repeated.current).toBe(1);
+    expect(second.current).toBe(2);
+    expect(afterGap.current).toBe(1);
+    expect(afterGap.best).toBe(2);
+  });
+
+  it("renders the last seven days with the completed streak marked", () => {
+    const streak = { current: 3, best: 3, lastCompletedDate: "2026-08-27" };
+    const calendar = getStreakCalendar(streak, new Date(2026, 7, 27));
+    expect(calendar).toHaveLength(7);
+    expect(calendar.filter((day) => day.completed)).toHaveLength(3);
+    expect(calendar.at(-1)?.today).toBe(true);
   });
 });

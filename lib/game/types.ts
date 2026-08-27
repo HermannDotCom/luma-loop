@@ -1,6 +1,7 @@
-import type { DailyProgress } from "./daily";
+import type { DailyProgress, DailyStreak } from "./daily";
 
 export type RunStatus = "home" | "playing" | "paused" | "gameover" | "settings" | "collection" | "daily";
+export type GameMode = "classic" | "training";
 
 export type GameState = {
   score: number;
@@ -8,6 +9,7 @@ export type GameState = {
   lives: number;
   hits: number;
   direction: 1 | -1;
+  mode: GameMode;
   gateAngle: number;
   runSeed: number;
   lastResult: "perfect" | "hit" | "miss" | null;
@@ -43,4 +45,5 @@ export type PlayerProfile = {
   equippedOrbitId: string;
   unlockedThemeIds: string[];
   dailyProgress?: DailyProgress;
+  dailyStreak: DailyStreak;
 };

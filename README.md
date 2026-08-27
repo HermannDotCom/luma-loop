@@ -6,6 +6,8 @@ La progression est découpée en cinq niveaux visibles : Éveil, Élan, Éclipse
 
 Le jeu ajoute aussi un **défi quotidien** conservé localement : il renouvelle automatiquement un objectif court de précision ou de passages et déverrouille le thème Aube à son achèvement. La collection contient ensuite des thèmes supplémentaires, déblocables par les meilleurs scores de 15, 35, 60 et 100 points. Les thèmes changent l’apparence de l’orbite sans modifier les règles du jeu.
 
+Une série quotidienne est représentée sur les sept derniers jours et progresse lorsque le défi est achevé. Le bouton **Entraînement** démarre une partie sans retrait de vies ni fin de partie, utile pour apprendre la trajectoire ou poursuivre une série de Parfaits. Tous les indicateurs de ces fonctions sont conservés localement sur l’appareil.
+
 ## Démarrer le projet
 
 Installez Node.js 22 et pnpm, puis exécutez les commandes suivantes depuis la racine du dépôt.

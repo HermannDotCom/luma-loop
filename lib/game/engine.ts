@@ -1,4 +1,4 @@
-import type { Difficulty, GameState, TapResolution } from "./types";
+import type { Difficulty, GameMode, GameState, TapResolution } from "./types";
 
 export const TAU = Math.PI * 2;
 export const STARTING_LIVES = 3;
@@ -29,13 +29,14 @@ export function getDifficulty(hits: number): Difficulty {
   return LEVELS[4];
 }
 
-export function createInitialState(runSeed = 0): GameState {
+export function createInitialState(runSeed = 0, mode: GameMode = "classic"): GameState {
   return {
     score: 0,
     combo: 0,
     lives: STARTING_LIVES,
     hits: 0,
     direction: 1,
+    mode,
     gateAngle: Math.PI * 1.5,
     runSeed,
     lastResult: null,
@@ -77,13 +78,13 @@ export function resolveTap(state: GameState, orbAngle: number): TapResolution {
     };
   }
 
-  const lives = state.lives - 1;
+  const lives = state.mode === "training" ? STARTING_LIVES : state.lives - 1;
   return {
     hit: false,
     perfect: false,
     levelUp: false,
     nextDifficulty: difficulty,
-    finished: lives <= 0,
+    finished: state.mode === "training" ? false : lives <= 0,
     state: {
       ...state,
       lives,

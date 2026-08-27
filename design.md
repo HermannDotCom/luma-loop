@@ -19,6 +19,8 @@ L’interface privilégie une utilisation à une main, avec toute action récurr
 
 Les défis et la collection font désormais partie du MVP : un défi journalier est calculé localement à partir de la date de l’appareil. Il demande soit des passages réussis, soit des touches Parfait, et offre le thème **Aube** lorsqu’il est terminé. Les autres thèmes deviennent disponibles à partir de records de 15, 35, 60 et 100 points. Cette progression n’impose aucun compte, paiement, connexion ni temps d’attente.
 
+Le défi affiche un calendrier léger de sept jours. Une réussite quotidienne prolonge la série, tandis qu’un jour manqué la remet à un jour sans effacer le meilleur historique. Le mode **Entraînement** laisse le joueur répéter sans perdre de vies ni atteindre un écran de fin. Chaque thème d’orbite se distingue désormais par sa couleur, l’épaisseur ou le motif de l’anneau, le halo de la luciole et de petites étincelles vectorielles, sans modifier les règles ni créer de surcharge visuelle.
+
 ## Boucle de jeu et difficulté
 
 La luciole se déplace constamment autour de l’anneau. Lorsque le joueur touche pendant qu’elle est dans la porte, il gagne des points, conserve sa série et la porte se relocalise. Une réussite au centre exact de la porte déclenche un **Parfait** et un bonus visible. En cas de toucher trop tôt ou trop tard, un pétale s’éteint et la série retombe à zéro; la luciole continue immédiatement, ce qui évite une sanction brutale. La partie s’achève après trois erreurs.
