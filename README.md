@@ -12,6 +12,8 @@ Les statistiques locales suivent les touches, la précision, les réussites, les
 
 La première ouverture lance une **partie guidée**, sans pénalité, qui explique la synchronisation à l’instant du geste. Après l’accomplissement du défi quotidien, la carte d’accueil invite discrètement le joueur à revenir le lendemain pour maintenir sa série, sans compte et sans notification.
 
+Le réglage **Animations réduites** préserve la boucle jouable tout en supprimant les ondes, les annonces de niveau et les étincelles décoratives. Le kit de captures se trouve dans [`STORE_CAPTURE_GUIDE.md`](./STORE_CAPTURE_GUIDE.md), tandis que [`BETA_CLOSED.md`](./BETA_CLOSED.md) et `beta-feedback.csv` organisent une bêta fermée sans collecte dans l’application.
+
 ## Démarrer le projet
 
 Installez Node.js 22 et pnpm, puis exécutez les commandes suivantes depuis la racine du dépôt.

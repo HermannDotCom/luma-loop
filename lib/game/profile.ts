@@ -11,6 +11,7 @@ export const DEFAULT_PROFILE: PlayerProfile = {
   hapticsEnabled: true,
   soundEnabled: true,
   highContrast: false,
+  reduceMotion: false,
   equippedOrbitId: "orbit-iris",
   unlockedThemeIds: ["orbit-iris"],
   dailyProgress: emptyDailyProgress(getDailyChallenge()),

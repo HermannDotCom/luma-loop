@@ -44,6 +44,7 @@ export type PlayerProfile = {
   hapticsEnabled: boolean;
   soundEnabled: boolean;
   highContrast: boolean;
+  reduceMotion: boolean;
   equippedOrbitId: string;
   unlockedThemeIds: string[];
   dailyProgress?: DailyProgress;

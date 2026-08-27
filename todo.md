@@ -51,3 +51,7 @@
 - [x] Ajouter une réinitialisation complète des données locales avec double confirmation.
 - [x] Préparer le protocole et l’arborescence de captures store sur appareil réel.
 - [x] Tester les parcours de consentement et de réinitialisation locale.
+- [x] Préparer un parcours de captures store exécutable sur appareil réel.
+- [x] Ajouter une préférence de réduction des animations appliquée aux effets du jeu.
+- [x] Concevoir le protocole de bêta fermée et le formulaire de retours structurés.
+- [x] Valider TypeScript, les tests et les parcours de confort après cette itération.

@@ -178,15 +178,15 @@ export function LumaLoopGame() {
     setBurst("idle");
     setLevelFlash(null);
     setGame(createInitialState(Date.now() % 997, mode));
-    setStatus("playing");
+    setStatus(mode === "tutorial" ? "tutorial" : "playing");
   }, []);
 
   const handleTap = useCallback(() => {
     if (status !== "playing" && status !== "tutorial") return;
     const outcome = resolveTap(gameRef.current, orbitAngleRef.current);
     setGame(outcome.state);
-    setBurst(outcome.hit ? "hit" : "miss");
-    if (outcome.levelUp) setLevelFlash(`NIVEAU ${outcome.nextDifficulty.level}`);
+    setBurst(profileRef.current.reduceMotion ? "idle" : outcome.hit ? "hit" : "miss");
+    if (outcome.levelUp && !profileRef.current.reduceMotion) setLevelFlash(`NIVEAU ${outcome.nextDifficulty.level}`);
     setProfile((current) => {
       const nextStats = recordTap(current.stats, outcome);
       if (outcome.hit) {
@@ -292,7 +292,7 @@ export function LumaLoopGame() {
             <Circle cx={playfieldSize / 2 + Math.cos(orbitAngle) * gateScreenRadius} cy={playfieldSize / 2 + Math.sin(orbitAngle) * gateScreenRadius} r={9} fill={activeTheme.palette.secondary} fillOpacity="0.42" />
             <Circle cx={playfieldSize / 2 + Math.cos(orbitAngle) * gateScreenRadius} cy={playfieldSize / 2 + Math.sin(orbitAngle) * gateScreenRadius} r={5} fill={activeTheme.palette.highlight} />
             <Circle cx={playfieldSize / 2 + Math.cos(orbitAngle) * gateScreenRadius - 1.8} cy={playfieldSize / 2 + Math.sin(orbitAngle) * gateScreenRadius - 1.8} r={2.4} fill={activeTheme.palette.primary} />
-            {themeEffect.particleAngles.map((offset, index) => <Circle key={`${activeTheme.id}-${offset}`} cx={playfieldSize / 2 + Math.cos(orbitAngle + offset) * gateScreenRadius} cy={playfieldSize / 2 + Math.sin(orbitAngle + offset) * gateScreenRadius} r={index % 2 === 0 ? 2.3 : 1.4} fill={activeTheme.palette.secondary} fillOpacity={0.45 + index * 0.06} />)}
+            {!profile.reduceMotion && themeEffect.particleAngles.map((offset, index) => <Circle key={`${activeTheme.id}-${offset}`} cx={playfieldSize / 2 + Math.cos(orbitAngle + offset) * gateScreenRadius} cy={playfieldSize / 2 + Math.sin(orbitAngle + offset) * gateScreenRadius} r={index % 2 === 0 ? 2.3 : 1.4} fill={activeTheme.palette.secondary} fillOpacity={0.45 + index * 0.06} />)}
           </G>
         </Svg>
         {levelFlash ? <View pointerEvents="none" style={styles.levelFlash}><Text style={styles.levelFlashTop}>NOUVEAU RYTHME</Text><Text style={styles.levelFlashText}>{levelFlash}</Text><Text style={styles.levelFlashName}>{difficulty.name.toUpperCase()}</Text></View> : null}
@@ -341,6 +341,8 @@ export function LumaLoopGame() {
             <SettingRow label="Sons" value={profile.soundEnabled} onChange={(value) => updateProfile({ soundEnabled: value })} />
             <View style={styles.divider} />
             <SettingRow label="Contraste renforcé" value={profile.highContrast} onChange={(value) => updateProfile({ highContrast: value })} />
+            <View style={styles.divider} />
+            <SettingRow label="Animations réduites" value={profile.reduceMotion} onChange={(value) => updateProfile({ reduceMotion: value })} />
           </View>
           <View style={styles.settingsActions}>
             <Pressable accessibilityRole="button" accessibilityLabel="Ouvrir les préférences publicitaires" onPress={() => setAdConsentVisible(true)} style={({ pressed }) => [styles.settingsActionCard, pressed && styles.settingsPressed]}><View><Text style={styles.settingsActionTitle}>Publicité future</Text><Text style={styles.settingsActionText}>{profile.adConsentPreference === "ask_later" ? "Vous serez consulté avant toute diffusion." : profile.adConsentPreference === "non_personalized" ? "Préférence : annonces non personnalisées." : "Préférence : personnalisation demandée."}</Text></View><Text style={styles.settingsActionArrow}>›</Text></Pressable>

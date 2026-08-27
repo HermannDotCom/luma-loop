@@ -10,6 +10,7 @@ La validation native doit être réalisée dans **Expo Go** sur un iPhone ou un 
 | Thèmes | Équipez Iris, puis un thème débloqué. | La couleur, le motif de l’orbite, le halo et les étincelles changent sans interrompre la partie. |
 | Statistiques et succès | Jouez, puis ouvrez **Précision** et **Succès**. | Les touches, réussites, Parfaits, meilleure série et barres de progression correspondent à la session. |
 | Confort | Coupez le son, les vibrations et activez le contraste. | Chaque réglage a un effet immédiat et se conserve après le retour à l’accueil. |
+| Animations réduites | Activez « Animations réduites », réussissez un passage puis changez de thème. | La boucle reste jouable; les ondes de réussite/erreur, les annonces de niveau et les étincelles thématiques mobiles sont supprimées. |
 
 Consignez tout comportement inattendu avec le modèle suivant : appareil, version du système, étape, résultat observé et capture d’écran. Les contrôles TypeScript, lint et les tests déterministes ne remplacent pas cette validation de l’audio, des vibrations et du geste tactile natifs.
 
