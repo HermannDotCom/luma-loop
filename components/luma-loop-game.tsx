@@ -13,11 +13,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle, Defs, G, LinearGradient, Path, RadialGradient, Stop } from "react-native-svg";
 import { setAudioModeAsync, useAudioPlayer } from "expo-audio";
+import { useLocalSearchParams } from "expo-router";
 
 import { AchievementsView, StatsView } from "@/components/activity-views";
 import { AdConsentModal, LegalNoticeModal, ResetDataModal } from "@/components/privacy-controls";
 import { getOrbitTheme, isOrbitThemeUnlocked, ORBIT_THEMES } from "@/lib/game/catalog";
-import { advanceDailyProgress, advanceDailyStreak, ensureDailyProgress, getDailyChallenge, getStreakCalendar } from "@/lib/game/daily";
+import { advanceDailyProgress, advanceDailyStreak, ensureDailyProgress, getDailyChallenge, getDateKey, getStreakCalendar } from "@/lib/game/daily";
 import { createInitialState, getDifficulty, normalizeAngle, resolveTap } from "@/lib/game/engine";
 import { gameHaptics } from "@/lib/game/haptics";
 import { clearProfile, DEFAULT_PROFILE, loadProfile, saveProfile } from "@/lib/game/profile";
@@ -59,6 +60,8 @@ function PrimaryButton({ label, onPress, secondary = false }: { label: string; o
 }
 
 export function LumaLoopGame() {
+  const { capture: captureParam } = useLocalSearchParams<{ capture?: string }>();
+  const capture = __DEV__ && typeof captureParam === "string" ? captureParam : undefined;
   const ambientPlayer = useAudioPlayer(AMBIENT_AUDIO_URL);
   const [status, setStatus] = useState<RunStatus>("home");
   const [profile, setProfile] = useState<PlayerProfile>(DEFAULT_PROFILE);
@@ -86,6 +89,7 @@ export function LumaLoopGame() {
   }, [profile]);
 
   useEffect(() => {
+    if (capture) return;
     void loadProfile().then((loaded) => {
       const challenge = getDailyChallenge();
       const dailyProgress = ensureDailyProgress(loaded.dailyProgress, challenge);
@@ -93,7 +97,32 @@ export function LumaLoopGame() {
       setProfile(normalized);
       if (loaded.dailyProgress !== dailyProgress) void saveProfile(normalized);
     });
-  }, []);
+  }, [capture]);
+
+  useEffect(() => {
+    if (!capture) return;
+    const challenge = getDailyChallenge();
+    const baseGame = createInitialState(418, capture === "training" ? "training" : "classic");
+    const stagedGame = capture === "rhythm"
+      ? { ...baseGame, score: 82, combo: 6, hits: 18, direction: -1 as const, gateAngle: Math.PI * 1.42, lastResult: "perfect" as const }
+      : capture === "training"
+        ? { ...baseGame, score: 34, combo: 4, hits: 8, gateAngle: Math.PI * 1.37, lastResult: "hit" as const }
+        : { ...baseGame, score: 27, combo: 4, hits: 7, gateAngle: Math.PI * 1.42, lastResult: "perfect" as const };
+    setProfile({
+      ...DEFAULT_PROFILE,
+      bestScore: 104,
+      equippedOrbitId: capture === "themes" ? "orbit-supernova" : "orbit-aurora",
+      unlockedThemeIds: ORBIT_THEMES.map((theme) => theme.id),
+      dailyProgress: { dateKey: getDateKey(), challengeId: challenge.id, value: Math.max(1, challenge.target - 1), completed: false },
+      dailyStreak: { current: 5, best: 9, lastCompletedDate: getDateKey() },
+      stats: { totalRuns: 48, trainingRuns: 9, totalTaps: 382, totalHits: 298, perfectHits: 96, maxCombo: 18, dailyChallengesCompleted: 11 },
+      hasSeenOnboarding: true,
+    });
+    setGame(stagedGame);
+    orbitAngleRef.current = stagedGame.gateAngle - 0.018;
+    setOrbitAngle(orbitAngleRef.current);
+    setStatus(capture === "daily" ? "daily" : capture === "themes" ? "collection" : capture === "stats" ? "stats" : "playing");
+  }, [capture]);
 
   useEffect(() => {
     void setAudioModeAsync({ playsInSilentMode: true });
@@ -128,6 +157,7 @@ export function LumaLoopGame() {
       timestampRef.current = null;
       return;
     }
+    if (capture) return;
 
     const tick = (timestamp: number) => {
       const previous = timestampRef.current ?? timestamp;
@@ -143,7 +173,7 @@ export function LumaLoopGame() {
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
-  }, [status]);
+  }, [capture, status]);
 
   const updateProfile = useCallback((patch: Partial<PlayerProfile>) => {
     setProfile((current) => {
@@ -475,7 +505,7 @@ export function LumaLoopGame() {
           {game.mode === "training" || game.mode === "tutorial" ? <View style={styles.trainingBadge}><Text style={styles.trainingInfinity}>{game.mode === "tutorial" ? "✦" : "∞"}</Text><Text style={styles.trainingText}>{game.mode === "tutorial" ? "GUIDÉ" : "SANS VIES"}</Text></View> : <View style={styles.lives}>{[0, 1, 2].map((item) => <MiniPetal key={item} active={item < game.lives} />)}</View>}
           <Pressable accessibilityRole="button" accessibilityLabel="Mettre la partie en pause" onPress={() => setStatus("paused")} style={({ pressed }) => [styles.pauseButton, pressed && styles.settingsPressed]}><View style={styles.pauseBars}><View style={styles.pauseBar}/><View style={styles.pauseBar}/></View></Pressable>
         </View>
-          <View style={styles.levelRow}><View style={styles.levelPill}><Text style={styles.levelPillText}>NIVEAU {difficulty.level}</Text></View><Text style={styles.levelName}>{difficulty.name.toUpperCase()}</Text></View>
+          <View style={styles.levelRow}><View style={styles.levelPill}><Text style={styles.levelPillText}>NIVEAU {difficulty.level}</Text></View><Text style={styles.levelName}>{difficulty.name.toUpperCase()}</Text>{game.direction < 0 ? <View style={styles.directionBadge}><Text style={styles.directionBadgeText}>↺ SENS INVERSÉ</Text></View> : null}</View>
           <View style={styles.comboLine}>{game.combo > 1 ? <Text style={styles.comboText}>{game.lastResult === "perfect" ? "PARFAIT · " : "SÉRIE · "}× {game.combo}</Text> : <Text style={styles.comboPrompt}>{difficulty.instruction}</Text>}</View>
         {game.mode === "tutorial" ? <View style={styles.tutorialCard}><Text style={styles.tutorialEyebrow}>REGARDEZ LA LUCIOLE</Text><Text style={styles.tutorialText}>Touchez n’importe où lorsqu’elle traverse la porte dorée.</Text></View> : null}
         <View style={styles.gameFieldWrap}>{playfield}</View>
@@ -501,7 +531,7 @@ const styles = StyleSheet.create({
   playfieldTouch: { alignSelf: "center", borderRadius: 180 }, playfieldPressed: { transform: [{ scale: 0.985 }] }, playfield: { alignItems: "center", justifyContent: "center", borderRadius: 180, backgroundColor: "#0D1030", borderWidth: 1, borderColor: "#342A58", shadowColor: "#8B5CF6", shadowOpacity: 0.25, shadowRadius: 22, elevation: 6, overflow: "hidden" }, playfieldContrast: { borderWidth: 3, borderColor: "#F4F7FF" },
   primaryButton: { width: "100%", minHeight: 58, borderRadius: 29, justifyContent: "center", alignItems: "center", backgroundColor: "#43F3C5", shadowColor: "#43F3C5", shadowOpacity: 0.36, shadowRadius: 14, elevation: 5 }, primaryButtonText: { color: "#09211F", fontSize: 15, fontWeight: "900", letterSpacing: 2.3 }, secondaryButton: { backgroundColor: "#1A1D3C", borderWidth: 1, borderColor: "#3B365E", shadowOpacity: 0 }, secondaryButtonText: { color: "#D7D4EC" }, buttonPressed: { opacity: 0.88, transform: [{ scale: 0.975 }] }, settingsButton: { paddingVertical: 16, paddingHorizontal: 24, marginTop: 3 }, settingsText: { color: "#AAA7C7", fontSize: 14, fontWeight: "700" }, settingsPressed: { opacity: 0.6 },
   gameScreen: { flex: 1, paddingHorizontal: 24, paddingTop: 10, paddingBottom: 18 }, gameHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 60 }, hudLabel: { color: "#8C88A9", fontSize: 10, letterSpacing: 2, fontWeight: "800" }, hudScore: { color: "#F4F7FF", fontSize: 29, lineHeight: 32, fontWeight: "800", letterSpacing: 1 }, lives: { flexDirection: "row", gap: 7, alignItems: "center" }, trainingBadge: { alignItems: "center" }, trainingInfinity: { color: "#43F3C5", fontSize: 25, lineHeight: 25, fontWeight: "800" }, trainingText: { color: "#43F3C5", fontSize: 8, letterSpacing: 1.2, fontWeight: "900" }, petal: { width: 15, height: 20, borderRadius: 12, transform: [{ rotate: "35deg" }] }, petalActive: { backgroundColor: "#FF6B8A", shadowColor: "#FF6B8A", shadowOpacity: 0.8, shadowRadius: 5 }, petalLost: { backgroundColor: "#302A46" }, pauseButton: { width: 46, height: 46, borderRadius: 23, borderWidth: 1, borderColor: "#3B365E", backgroundColor: "#141733", alignItems: "center", justifyContent: "center" }, pauseBars: { flexDirection: "row", gap: 5 }, pauseBar: { width: 4, height: 15, borderRadius: 2, backgroundColor: "#D7D4EC" },
-  levelRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9, height: 29 }, levelPill: { backgroundColor: "#251D45", borderWidth: 1, borderColor: "#6B51AD", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }, levelPillText: { color: "#C4B5FD", fontSize: 9, letterSpacing: 1.3, fontWeight: "900" }, levelName: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.8, fontWeight: "800" }, comboLine: { height: 30, alignItems: "center", justifyContent: "center" }, comboText: { color: "#FFD166", fontSize: 12, fontWeight: "900", letterSpacing: 1.7 }, comboPrompt: { color: "#817C9C", fontSize: 13 }, gameFieldWrap: { flex: 1, alignItems: "center", justifyContent: "center" }, gameInstruction: { flexDirection: "row", alignItems: "center", alignSelf: "center", gap: 8, paddingVertical: 10 }, instructionDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#FFD166" }, instructionText: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.1, fontWeight: "800", textAlign: "center" }, levelFlash: { position: "absolute", alignSelf: "center", top: "36%", alignItems: "center", paddingHorizontal: 18, paddingVertical: 13, borderRadius: 18, backgroundColor: "rgba(9, 11, 26, 0.88)", borderWidth: 1, borderColor: "#FFD166" }, levelFlashTop: { color: "#43F3C5", fontSize: 9, fontWeight: "900", letterSpacing: 1.8 }, levelFlashText: { color: "#FFD166", fontSize: 24, fontWeight: "900", letterSpacing: 1.2, marginTop: 3 }, levelFlashName: { color: "#F4F7FF", fontSize: 10, fontWeight: "800", letterSpacing: 1.6, marginTop: 2 },
+  levelRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9, height: 29 }, levelPill: { backgroundColor: "#251D45", borderWidth: 1, borderColor: "#6B51AD", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }, levelPillText: { color: "#C4B5FD", fontSize: 9, letterSpacing: 1.3, fontWeight: "900" }, levelName: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.8, fontWeight: "800" }, directionBadge: { borderRadius: 9, borderWidth: 1, borderColor: "#3E7970", backgroundColor: "#112927", paddingHorizontal: 6, paddingVertical: 3 }, directionBadgeText: { color: "#43F3C5", fontSize: 7, letterSpacing: 0.8, fontWeight: "900" }, comboLine: { height: 30, alignItems: "center", justifyContent: "center" }, comboText: { color: "#FFD166", fontSize: 12, fontWeight: "900", letterSpacing: 1.7 }, comboPrompt: { color: "#817C9C", fontSize: 13 }, gameFieldWrap: { flex: 1, alignItems: "center", justifyContent: "center" }, gameInstruction: { flexDirection: "row", alignItems: "center", alignSelf: "center", gap: 8, paddingVertical: 10 }, instructionDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#FFD166" }, instructionText: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.1, fontWeight: "800", textAlign: "center" }, levelFlash: { position: "absolute", alignSelf: "center", top: "36%", alignItems: "center", paddingHorizontal: 18, paddingVertical: 13, borderRadius: 18, backgroundColor: "rgba(9, 11, 26, 0.88)", borderWidth: 1, borderColor: "#FFD166" }, levelFlashTop: { color: "#43F3C5", fontSize: 9, fontWeight: "900", letterSpacing: 1.8 }, levelFlashText: { color: "#FFD166", fontSize: 24, fontWeight: "900", letterSpacing: 1.2, marginTop: 3 }, levelFlashName: { color: "#F4F7FF", fontSize: 10, fontWeight: "800", letterSpacing: 1.6, marginTop: 2 },
   tutorialCard: { alignSelf: "center", maxWidth: 300, paddingHorizontal: 15, paddingVertical: 9, borderRadius: 14, borderWidth: 1, borderColor: "#6B51AD", backgroundColor: "#171330" }, tutorialEyebrow: { color: "#43F3C5", fontSize: 8, fontWeight: "900", letterSpacing: 1.7, textAlign: "center" }, tutorialText: { color: "#F4F7FF", fontSize: 12, lineHeight: 17, fontWeight: "700", textAlign: "center", marginTop: 3 },
   settingsScreen: { flex: 1, padding: 28 }, eyebrow: { color: "#43F3C5", fontSize: 11, fontWeight: "900", letterSpacing: 2.7 }, settingsTitle: { color: "#F4F7FF", fontSize: 40, fontWeight: "800", letterSpacing: -1, marginTop: 8 }, settingsSubtitle: { color: "#AAA7C7", fontSize: 16, lineHeight: 23, marginTop: 10, maxWidth: 280 }, settingsCard: { backgroundColor: "#141733", borderRadius: 22, marginTop: 34, paddingHorizontal: 18, borderWidth: 1, borderColor: "#342F52" }, settingRow: { minHeight: 68, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, settingLabel: { color: "#E5E3F4", fontSize: 16, fontWeight: "700" }, divider: { height: 1, backgroundColor: "#302B4B" }, settingsSpacer: { flex: 1 },
   settingsActions: { marginTop: 14, gap: 10 }, settingsActionCard: { minHeight: 75, borderRadius: 17, borderWidth: 1, borderColor: "#38345B", backgroundColor: "#141733", paddingHorizontal: 15, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, resetActionCard: { minHeight: 75, borderRadius: 17, borderWidth: 1, borderColor: "#694255", backgroundColor: "#21142A", paddingHorizontal: 15, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, settingsActionTitle: { color: "#F4F7FF", fontSize: 14, fontWeight: "800" }, resetActionTitle: { color: "#FF9BAF", fontSize: 14, fontWeight: "800" }, settingsActionText: { color: "#AAA7C7", fontSize: 10, lineHeight: 15, marginTop: 3, maxWidth: 245 }, settingsActionArrow: { color: "#FFD166", fontSize: 28, fontWeight: "300" },

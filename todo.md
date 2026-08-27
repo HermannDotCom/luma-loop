@@ -64,3 +64,6 @@
 - [x] Extraire et recouper les informations légales de Flash Digital SAS depuis le Kbis et société.com.
 - [x] Ajouter une modale de mentions légales à côté de Confidentialité dans Réglages.
 - [x] Tester le parcours des mentions légales intégrées sans lien externe.
+- [x] Définir six états de présentation représentatifs de l’application réelle.
+- [x] Capturer les écrans de boucle, rythme, défi, thèmes, précision et entraînement.
+- [x] Vérifier les formats, cadrages et textes du lot de captures store.
