@@ -78,13 +78,13 @@ export function resolveTap(state: GameState, orbAngle: number): TapResolution {
     };
   }
 
-  const lives = state.mode === "training" ? STARTING_LIVES : state.lives - 1;
+  const lives = state.mode === "training" || state.mode === "tutorial" ? STARTING_LIVES : state.lives - 1;
   return {
     hit: false,
     perfect: false,
     levelUp: false,
     nextDifficulty: difficulty,
-    finished: state.mode === "training" ? false : lives <= 0,
+    finished: state.mode === "training" || state.mode === "tutorial" ? false : lives <= 0,
     state: {
       ...state,
       lives,

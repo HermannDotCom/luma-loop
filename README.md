@@ -8,6 +8,10 @@ Le jeu ajoute aussi un **défi quotidien** conservé localement : il renouvelle 
 
 Une série quotidienne est représentée sur les sept derniers jours et progresse lorsque le défi est achevé. Le bouton **Entraînement** démarre une partie sans retrait de vies ni fin de partie, utile pour apprendre la trajectoire ou poursuivre une série de Parfaits. Tous les indicateurs de ces fonctions sont conservés localement sur l’appareil.
 
+Les statistiques locales suivent les touches, la précision, les réussites, les Parfaits, les parties d’entraînement et la meilleure série. Sept succès progressifs donnent des objectifs complémentaires à la simple amélioration du score. Le protocole de validation sur appareil réel est détaillé dans [`TEST_ON_DEVICE.md`](./TEST_ON_DEVICE.md).
+
+La première ouverture lance une **partie guidée**, sans pénalité, qui explique la synchronisation à l’instant du geste. Après l’accomplissement du défi quotidien, la carte d’accueil invite discrètement le joueur à revenir le lendemain pour maintenir sa série, sans compte et sans notification.
+
 ## Démarrer le projet
 
 Installez Node.js 22 et pnpm, puis exécutez les commandes suivantes depuis la racine du dépôt.

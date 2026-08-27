@@ -1,7 +1,8 @@
 import type { DailyProgress, DailyStreak } from "./daily";
+import type { PlayerStats } from "./stats";
 
-export type RunStatus = "home" | "playing" | "paused" | "gameover" | "settings" | "collection" | "daily";
-export type GameMode = "classic" | "training";
+export type RunStatus = "home" | "playing" | "tutorial" | "paused" | "gameover" | "settings" | "collection" | "daily" | "stats" | "achievements";
+export type GameMode = "classic" | "training" | "tutorial";
 
 export type GameState = {
   score: number;
@@ -46,4 +47,6 @@ export type PlayerProfile = {
   unlockedThemeIds: string[];
   dailyProgress?: DailyProgress;
   dailyStreak: DailyStreak;
+  stats: PlayerStats;
+  hasSeenOnboarding: boolean;
 };

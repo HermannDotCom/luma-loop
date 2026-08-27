@@ -28,3 +28,18 @@
 - [x] Créer un mode entraînement sans vies ni fin de partie.
 - [x] Ajouter des effets visuels dédiés aux cinq thèmes d’orbite.
 - [x] Tester la persistance des séries, le mode entraînement et les thèmes enrichis.
+- [x] Définir les statistiques locales de précision et d’activité à enregistrer.
+- [x] Ajouter des succès progressifs couvrant précision, séries, entraînement et défis.
+- [x] Créer un écran de statistiques et un écran de succès accessibles depuis l’accueil.
+- [x] Écrire les tests déterministes des statistiques et des déblocages.
+- [x] Documenter et exécuter le protocole de test sur iPhone ou Android réel.
+- [x] Diagnostiquer l’échec Expo Go « Failed to download remote update » signalé sur Android.
+- [x] Corriger la configuration ou la livraison Expo afin que le QR se charge dans Expo Go.
+- [x] Retester le chargement du bundle mobile depuis Expo Go après correction.
+- [x] Vérifier la compatibilité réelle entre Expo Go 54.0.8 et le projet SDK 54.
+- [x] Diagnostiquer le protocole et le manifeste public utilisés par Expo Go pour le QR actuel.
+- [x] Fournir un canal de prévisualisation Expo Go fonctionnel ou documenter précisément la limitation de réseau.
+- [x] Consigner la validation du test sur appareil réel dans le protocole qualité.
+- [x] Ajouter une première prise en main interactive pour les nouveaux joueurs.
+- [x] Ajouter un objectif de retour simple, sans notification ni compte utilisateur.
+- [x] Finaliser les métadonnées de publication et les éléments nécessaires à la fiche store.

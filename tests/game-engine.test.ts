@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_COSMETICS, DEFAULT_INVENTORY, isOrbitThemeUnlocked, ORBIT_THEMES } from "../lib/game/catalog";
 import { advanceDailyProgress, advanceDailyStreak, emptyDailyProgress, getDailyChallenge, getStreakCalendar } from "../lib/game/daily";
 import { angularDistance, createInitialState, getDifficulty, resolveTap, TAU } from "../lib/game/engine";
+import { getAchievements } from "../lib/game/achievements";
+import { accuracy, EMPTY_STATS, recordRunStart, recordTap } from "../lib/game/stats";
 
 describe("Luma Loop game engine", () => {
   it("considers equivalent angles at the circle boundary to be adjacent", () => {
@@ -35,6 +37,15 @@ describe("Luma Loop game engine", () => {
     const miss = resolveTap(state, state.gateAngle + Math.PI);
     expect(miss.state.lives).toBe(3);
     expect(miss.finished).toBe(false);
+  });
+
+  it("keeps the guided first run free of penalties until its first success", () => {
+    const state = createInitialState(7, "tutorial");
+    const miss = resolveTap(state, state.gateAngle + Math.PI);
+    const hit = resolveTap(miss.state, miss.state.gateAngle);
+    expect(miss.state.lives).toBe(3);
+    expect(miss.finished).toBe(false);
+    expect(hit.hit).toBe(true);
   });
 
   it("changes to visible levels with a narrower but still readable success window", () => {
@@ -98,5 +109,16 @@ describe("Luma Loop game engine", () => {
     expect(calendar).toHaveLength(7);
     expect(calendar.filter((day) => day.completed)).toHaveLength(3);
     expect(calendar.at(-1)?.today).toBe(true);
+  });
+
+  it("records activity metrics and exposes their related achievements", () => {
+    const hit = resolveTap(createInitialState(2), Math.PI * 1.5);
+    const activeStats = recordTap(recordRunStart(EMPTY_STATS, "training"), hit);
+    expect(activeStats.trainingRuns).toBe(1);
+    expect(activeStats.totalHits).toBe(1);
+    expect(activeStats.perfectHits).toBe(1);
+    expect(accuracy(activeStats)).toBe(100);
+    const achievements = getAchievements({ stats: { ...activeStats, totalHits: 25 }, dailyStreak: { current: 0, best: 0, lastCompletedDate: null } });
+    expect(achievements.find((item) => item.id === "first-light")?.unlocked).toBe(true);
   });
 });
