@@ -16,6 +16,8 @@ import { gameHaptics } from "@/lib/game/haptics";
 import { DEFAULT_PROFILE, loadProfile, saveProfile } from "@/lib/game/profile";
 import type { GameState, PlayerProfile, RunStatus } from "@/lib/game/types";
 
+const AMBIENT_AUDIO_URL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663253463242/vrBHtdJuieNHcUuN.mp3";
+
 type Burst = "idle" | "hit" | "miss";
 
 function scoreLabel(score: number) {
@@ -40,7 +42,7 @@ function PrimaryButton({ label, onPress, secondary = false }: { label: string; o
 }
 
 export function LumaLoopGame() {
-  const ambientPlayer = useAudioPlayer(require("../assets/luma-loop-ambient.mp3"));
+  const ambientPlayer = useAudioPlayer(AMBIENT_AUDIO_URL);
   const [status, setStatus] = useState<RunStatus>("home");
   const [profile, setProfile] = useState<PlayerProfile>(DEFAULT_PROFILE);
   const [game, setGame] = useState<GameState>(() => createInitialState(Date.now() % 997));
