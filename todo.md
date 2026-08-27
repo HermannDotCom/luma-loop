@@ -46,3 +46,8 @@
 - [x] Remplacer le lien GitHub de confidentialité par une modale intégrée.
 - [x] Afficher la politique de confidentialité dans une fenêtre accessible et refermable.
 - [x] Tester le nouveau parcours de confidentialité sans navigation externe.
+- [x] Définir un consentement publicitaire futur, sans intégrer de SDK ni diffuser de publicité.
+- [x] Ajouter le réglage et la modale de consentement publicitaire réversible.
+- [x] Ajouter une réinitialisation complète des données locales avec double confirmation.
+- [x] Préparer le protocole et l’arborescence de captures store sur appareil réel.
+- [x] Tester les parcours de consentement et de réinitialisation locale.

@@ -17,6 +17,7 @@ export const DEFAULT_PROFILE: PlayerProfile = {
   dailyStreak: EMPTY_DAILY_STREAK,
   stats: EMPTY_STATS,
   hasSeenOnboarding: false,
+  adConsentPreference: "ask_later",
 };
 
 export async function loadProfile(): Promise<PlayerProfile> {
@@ -33,5 +34,13 @@ export async function saveProfile(profile: PlayerProfile): Promise<void> {
     await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
   } catch {
     // Local persistence is a non-blocking enhancement; gameplay remains available.
+  }
+}
+
+export async function clearProfile(): Promise<void> {
+  try {
+    await AsyncStorage.removeItem(PROFILE_KEY);
+  } catch {
+    // La suppression reste possible par désinstallation si le stockage local échoue.
   }
 }

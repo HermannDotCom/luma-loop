@@ -3,6 +3,7 @@ import type { PlayerStats } from "./stats";
 
 export type RunStatus = "home" | "playing" | "tutorial" | "paused" | "gameover" | "settings" | "collection" | "daily" | "stats" | "achievements";
 export type GameMode = "classic" | "training" | "tutorial";
+export type AdConsentPreference = "ask_later" | "non_personalized" | "personalized";
 
 export type GameState = {
   score: number;
@@ -49,4 +50,5 @@ export type PlayerProfile = {
   dailyStreak: DailyStreak;
   stats: PlayerStats;
   hasSeenOnboarding: boolean;
+  adConsentPreference: AdConsentPreference;
 };

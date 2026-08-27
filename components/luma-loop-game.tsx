@@ -15,11 +15,12 @@ import Svg, { Circle, Defs, G, LinearGradient, Path, RadialGradient, Stop } from
 import { setAudioModeAsync, useAudioPlayer } from "expo-audio";
 
 import { AchievementsView, StatsView } from "@/components/activity-views";
+import { AdConsentModal, ResetDataModal } from "@/components/privacy-controls";
 import { getOrbitTheme, isOrbitThemeUnlocked, ORBIT_THEMES } from "@/lib/game/catalog";
 import { advanceDailyProgress, advanceDailyStreak, ensureDailyProgress, getDailyChallenge, getStreakCalendar } from "@/lib/game/daily";
 import { createInitialState, getDifficulty, normalizeAngle, resolveTap } from "@/lib/game/engine";
 import { gameHaptics } from "@/lib/game/haptics";
-import { DEFAULT_PROFILE, loadProfile, saveProfile } from "@/lib/game/profile";
+import { clearProfile, DEFAULT_PROFILE, loadProfile, saveProfile } from "@/lib/game/profile";
 import { countUnlocked, getAchievements } from "@/lib/game/achievements";
 import { accuracy, recordRunStart, recordTap } from "@/lib/game/stats";
 import type { GameMode, GameState, PlayerProfile, RunStatus } from "@/lib/game/types";
@@ -67,6 +68,8 @@ export function LumaLoopGame() {
   const [burst, setBurst] = useState<Burst>("idle");
   const [levelFlash, setLevelFlash] = useState<string | null>(null);
   const [privacyVisible, setPrivacyVisible] = useState(false);
+  const [adConsentVisible, setAdConsentVisible] = useState(false);
+  const [resetStep, setResetStep] = useState<"warning" | "confirm" | null>(null);
   const orbitAngleRef = useRef(0);
   const frameRef = useRef<number | null>(null);
   const timestampRef = useRef<number | null>(null);
@@ -146,6 +149,20 @@ export function LumaLoopGame() {
       const next = { ...current, ...patch };
       void saveProfile(next);
       return next;
+    });
+  }, []);
+
+  const resetLocalData = useCallback(() => {
+    void clearProfile().then(() => {
+      profileRef.current = DEFAULT_PROFILE;
+      setProfile(DEFAULT_PROFILE);
+      setGame(createInitialState(Date.now() % 997));
+      setOrbitAngle(0);
+      orbitAngleRef.current = 0;
+      setBurst("idle");
+      setLevelFlash(null);
+      setResetStep(null);
+      setStatus("home");
     });
   }, []);
 
@@ -325,6 +342,10 @@ export function LumaLoopGame() {
             <View style={styles.divider} />
             <SettingRow label="Contraste renforcé" value={profile.highContrast} onChange={(value) => updateProfile({ highContrast: value })} />
           </View>
+          <View style={styles.settingsActions}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Ouvrir les préférences publicitaires" onPress={() => setAdConsentVisible(true)} style={({ pressed }) => [styles.settingsActionCard, pressed && styles.settingsPressed]}><View><Text style={styles.settingsActionTitle}>Publicité future</Text><Text style={styles.settingsActionText}>{profile.adConsentPreference === "ask_later" ? "Vous serez consulté avant toute diffusion." : profile.adConsentPreference === "non_personalized" ? "Préférence : annonces non personnalisées." : "Préférence : personnalisation demandée."}</Text></View><Text style={styles.settingsActionArrow}>›</Text></Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Réinitialiser toutes les données locales" onPress={() => setResetStep("warning")} style={({ pressed }) => [styles.resetActionCard, pressed && styles.settingsPressed]}><View><Text style={styles.resetActionTitle}>Réinitialiser les données</Text><Text style={styles.settingsActionText}>Efface scores, thèmes, défis et préférences.</Text></View><Text style={styles.settingsActionArrow}>›</Text></Pressable>
+          </View>
           <View style={styles.settingsSpacer} />
           <PrimaryButton label="RETOUR" onPress={() => setStatus("home")} secondary />
           <Pressable accessibilityRole="button" accessibilityLabel="Lire la politique de confidentialité" onPress={() => setPrivacyVisible(true)} style={({ pressed }) => [styles.privacyLink, pressed && styles.settingsPressed]}>
@@ -351,6 +372,8 @@ export function LumaLoopGame() {
               </View>
             </View>
           </Modal>
+          <AdConsentModal visible={adConsentVisible} value={profile.adConsentPreference} onChoose={(adConsentPreference) => updateProfile({ adConsentPreference })} onClose={() => setAdConsentVisible(false)} />
+          <ResetDataModal visible={resetStep !== null} step={resetStep ?? "warning"} onClose={() => setResetStep(null)} onContinue={() => setResetStep("confirm")} onReset={resetLocalData} />
         </View>
       </SafeAreaView>
     );
@@ -479,6 +502,7 @@ const styles = StyleSheet.create({
   levelRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9, height: 29 }, levelPill: { backgroundColor: "#251D45", borderWidth: 1, borderColor: "#6B51AD", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }, levelPillText: { color: "#C4B5FD", fontSize: 9, letterSpacing: 1.3, fontWeight: "900" }, levelName: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.8, fontWeight: "800" }, comboLine: { height: 30, alignItems: "center", justifyContent: "center" }, comboText: { color: "#FFD166", fontSize: 12, fontWeight: "900", letterSpacing: 1.7 }, comboPrompt: { color: "#817C9C", fontSize: 13 }, gameFieldWrap: { flex: 1, alignItems: "center", justifyContent: "center" }, gameInstruction: { flexDirection: "row", alignItems: "center", alignSelf: "center", gap: 8, paddingVertical: 10 }, instructionDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#FFD166" }, instructionText: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.1, fontWeight: "800", textAlign: "center" }, levelFlash: { position: "absolute", alignSelf: "center", top: "36%", alignItems: "center", paddingHorizontal: 18, paddingVertical: 13, borderRadius: 18, backgroundColor: "rgba(9, 11, 26, 0.88)", borderWidth: 1, borderColor: "#FFD166" }, levelFlashTop: { color: "#43F3C5", fontSize: 9, fontWeight: "900", letterSpacing: 1.8 }, levelFlashText: { color: "#FFD166", fontSize: 24, fontWeight: "900", letterSpacing: 1.2, marginTop: 3 }, levelFlashName: { color: "#F4F7FF", fontSize: 10, fontWeight: "800", letterSpacing: 1.6, marginTop: 2 },
   tutorialCard: { alignSelf: "center", maxWidth: 300, paddingHorizontal: 15, paddingVertical: 9, borderRadius: 14, borderWidth: 1, borderColor: "#6B51AD", backgroundColor: "#171330" }, tutorialEyebrow: { color: "#43F3C5", fontSize: 8, fontWeight: "900", letterSpacing: 1.7, textAlign: "center" }, tutorialText: { color: "#F4F7FF", fontSize: 12, lineHeight: 17, fontWeight: "700", textAlign: "center", marginTop: 3 },
   settingsScreen: { flex: 1, padding: 28 }, eyebrow: { color: "#43F3C5", fontSize: 11, fontWeight: "900", letterSpacing: 2.7 }, settingsTitle: { color: "#F4F7FF", fontSize: 40, fontWeight: "800", letterSpacing: -1, marginTop: 8 }, settingsSubtitle: { color: "#AAA7C7", fontSize: 16, lineHeight: 23, marginTop: 10, maxWidth: 280 }, settingsCard: { backgroundColor: "#141733", borderRadius: 22, marginTop: 34, paddingHorizontal: 18, borderWidth: 1, borderColor: "#342F52" }, settingRow: { minHeight: 68, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, settingLabel: { color: "#E5E3F4", fontSize: 16, fontWeight: "700" }, divider: { height: 1, backgroundColor: "#302B4B" }, settingsSpacer: { flex: 1 },
+  settingsActions: { marginTop: 14, gap: 10 }, settingsActionCard: { minHeight: 75, borderRadius: 17, borderWidth: 1, borderColor: "#38345B", backgroundColor: "#141733", paddingHorizontal: 15, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, resetActionCard: { minHeight: 75, borderRadius: 17, borderWidth: 1, borderColor: "#694255", backgroundColor: "#21142A", paddingHorizontal: 15, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, settingsActionTitle: { color: "#F4F7FF", fontSize: 14, fontWeight: "800" }, resetActionTitle: { color: "#FF9BAF", fontSize: 14, fontWeight: "800" }, settingsActionText: { color: "#AAA7C7", fontSize: 10, lineHeight: 15, marginTop: 3, maxWidth: 245 }, settingsActionArrow: { color: "#FFD166", fontSize: 28, fontWeight: "300" },
   privacyLink: { alignSelf: "center", paddingHorizontal: 18, paddingTop: 17, paddingBottom: 4 }, privacyLinkText: { color: "#AAA7C7", fontSize: 13, fontWeight: "700", textDecorationLine: "underline" },
   modalScrim: { flex: 1, backgroundColor: "rgba(3, 4, 12, 0.78)", justifyContent: "flex-end" }, privacySheet: { maxHeight: "88%", minHeight: 480, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 24, backgroundColor: "#11142B", borderTopLeftRadius: 28, borderTopRightRadius: 28, borderWidth: 1, borderColor: "#3D3761" }, privacyHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", borderBottomWidth: 1, borderBottomColor: "#2C2946", paddingBottom: 15 }, privacyKicker: { color: "#43F3C5", fontSize: 9, letterSpacing: 2.1, fontWeight: "900" }, privacyTitle: { color: "#F4F7FF", fontSize: 26, fontWeight: "800", letterSpacing: -0.4, marginTop: 3 }, modalClose: { width: 38, height: 38, borderRadius: 19, alignItems: "center", justifyContent: "center", backgroundColor: "#24203B", borderWidth: 1, borderColor: "#4A4567" }, modalCloseText: { color: "#F4F7FF", fontSize: 25, lineHeight: 27, fontWeight: "300" }, privacyContent: { paddingVertical: 18, gap: 12 }, privacyDate: { color: "#817C9C", fontSize: 11, fontStyle: "italic", marginBottom: 3 }, privacyHeading: { color: "#43F3C5", fontSize: 13, fontWeight: "900", letterSpacing: 1.1, marginTop: 7 }, privacyParagraph: { color: "#D7D4EC", fontSize: 14, lineHeight: 21 },
   collectionList: { paddingHorizontal: 24, paddingTop: 22, paddingBottom: 26 }, collectionTitle: { color: "#F4F7FF", fontSize: 38, letterSpacing: -1, fontWeight: "800", marginTop: 8 }, collectionSubtitle: { color: "#AAA7C7", fontSize: 15, lineHeight: 22, marginTop: 9, maxWidth: 310 }, collectionScore: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", borderRadius: 18, backgroundColor: "#141733", borderWidth: 1, borderColor: "#342F52", paddingHorizontal: 16, paddingVertical: 14, marginTop: 22 }, collectionScoreLabel: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.8, fontWeight: "900" }, collectionScoreValue: { color: "#FFD166", fontSize: 28, fontWeight: "900" }, collectionSection: { color: "#817C9C", fontSize: 10, letterSpacing: 2, fontWeight: "900", marginTop: 26, marginBottom: 10 }, themeCard: { minHeight: 78, borderRadius: 18, borderWidth: 1, borderColor: "#342F52", backgroundColor: "#141733", flexDirection: "row", alignItems: "center", paddingHorizontal: 12, marginBottom: 10 }, themeCardEquipped: { borderColor: "#43F3C5", backgroundColor: "#152842" }, themeCardLocked: { opacity: 0.52 }, themeSwatch: { width: 46, height: 46, borderRadius: 23, alignItems: "center", justifyContent: "center" }, themeSwatchInner: { width: 29, height: 29, borderRadius: 15, borderWidth: 3, backgroundColor: "#090B1A" }, themeCopy: { flex: 1, paddingLeft: 11 }, themeName: { color: "#F4F7FF", fontSize: 15, fontWeight: "800" }, themeDescription: { color: "#AAA7C7", fontSize: 11, lineHeight: 16, marginTop: 2 }, themeBadge: { borderRadius: 10, borderWidth: 1, borderColor: "#4B4567", paddingHorizontal: 8, paddingVertical: 5 }, themeBadgeEquipped: { borderColor: "#43F3C5", backgroundColor: "#193E3A" }, themeBadgeText: { color: "#AAA7C7", fontSize: 8, letterSpacing: 1, fontWeight: "900" }, themeBadgeTextEquipped: { color: "#43F3C5" }, collectionFooter: { marginTop: 9 },

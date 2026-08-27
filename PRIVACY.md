@@ -6,7 +6,7 @@ Luma Loop est un jeu de synchronisation jouable sans compte. La version actuelle
 
 ## Données traitées par le jeu
 
-Le meilleur score et les préférences choisies dans le jeu (vibrations, son et contraste) sont enregistrés uniquement sur l’appareil au moyen du stockage local. Le développeur ne reçoit pas ces données et elles ne sont pas synchronisées vers un serveur.
+Le meilleur score, les statistiques, les thèmes et les préférences choisies dans le jeu (vibrations, son, contraste et préférence publicitaire future) sont enregistrés uniquement sur l’appareil au moyen du stockage local. Le développeur ne reçoit pas ces données et elles ne sont pas synchronisées vers un serveur.
 
 Lorsque l’option de son est activée pendant une partie, l’application demande un fichier audio statique depuis son hébergement. Cette requête peut créer des journaux techniques de connexion chez l’hébergeur, tels qu’une adresse IP et des informations standard de navigateur ou d’appareil. L’application ne crée pas de compte, ne demande pas de nom, d’adresse e-mail, de localisation, de photo, de micro ou de contact.
 
@@ -17,6 +17,8 @@ Cette version ne diffuse aucune publicité et ne contient pas de SDK publicitair
 ## Vos choix
 
 Vous pouvez désactiver le son, les vibrations et le contraste renforcé dans les réglages du jeu. La désinstallation de l’application supprime les données locales associées sur l’appareil.
+
+Vous pouvez également ouvrir « Publicité future » pour enregistrer une préférence locale, ou choisir « Réinitialiser les données » pour effacer immédiatement le score, les thèmes, les défis, les succès, les statistiques et les réglages de cet appareil. Cette préférence n’autorise actuellement aucun suivi : si un SDK publicitaire est ajouté, son consentement réglementaire sera demandé séparément avant toute diffusion.
 
 ## Contact
 
