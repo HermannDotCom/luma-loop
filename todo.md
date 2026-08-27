@@ -67,3 +67,14 @@
 - [x] Définir six états de présentation représentatifs de l’application réelle.
 - [x] Capturer les écrans de boucle, rythme, défi, thèmes, précision et entraînement.
 - [x] Vérifier les formats, cadrages et textes du lot de captures store.
+- [x] Vérifier les prérequis de signature Android et iOS pour la version de soumission.
+- [x] Préparer les profils de build signée et les paramètres Expo de distribution.
+- [x] Compléter le dossier de réponses pour les déclarations de confidentialité et de classification d’âge.
+- [x] Valider le projet puis sauvegarder le jalon de préparation à la soumission.
+- [x] Embarquer la boucle audio localement et retirer la requête média distante avant déclaration store.
+- [x] Associer Luma Loop au projet EAS HermannDotCom pour la signature de distribution.
+- [ ] Connecter le compte Google Play Console de Flash Digital SAS et vérifier l’accès développeur.
+- [ ] Préparer une archive Android App Bundle signée pour la piste interne Play Store.
+- [x] Reporter la préparation iOS jusqu’à l’obtention d’un accès Apple Developer pour Flash Digital SAS.
+- [x] Évaluer le modèle de monétisation publicitaire adapté à Luma Loop.
+- [x] Produire un prévisionnel de revenus publicitaires prudent avec hypothèses et scénarios traçables.

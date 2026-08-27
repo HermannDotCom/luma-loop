@@ -26,7 +26,7 @@ import { countUnlocked, getAchievements } from "@/lib/game/achievements";
 import { accuracy, recordRunStart, recordTap } from "@/lib/game/stats";
 import type { GameMode, GameState, PlayerProfile, RunStatus } from "@/lib/game/types";
 
-const AMBIENT_AUDIO_URL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663253463242/vrBHtdJuieNHcUuN.mp3";
+const AMBIENT_AUDIO_SOURCE = require("../assets/audio/luma-loop-ambient.mp3");
 const THEME_EFFECTS = {
   "orbit-iris": { orbitWidth: 2, dash: "", halo: 18, particleAngles: [] as number[] },
   "orbit-daybreak": { orbitWidth: 3, dash: "5 5", halo: 23, particleAngles: [0.38, 1.95, 4.4] },
@@ -62,7 +62,7 @@ function PrimaryButton({ label, onPress, secondary = false }: { label: string; o
 export function LumaLoopGame() {
   const { capture: captureParam } = useLocalSearchParams<{ capture?: string }>();
   const capture = __DEV__ && typeof captureParam === "string" ? captureParam : undefined;
-  const ambientPlayer = useAudioPlayer(AMBIENT_AUDIO_URL);
+  const ambientPlayer = useAudioPlayer(AMBIENT_AUDIO_SOURCE);
   const [status, setStatus] = useState<RunStatus>("home");
   const [profile, setProfile] = useState<PlayerProfile>(DEFAULT_PROFILE);
   const [game, setGame] = useState<GameState>(() => createInitialState(Date.now() % 997));
@@ -391,7 +391,7 @@ export function LumaLoopGame() {
                   <Text style={styles.privacyParagraph}>Luma Loop est un jeu de synchronisation jouable sans compte. Cette version ne contient ni publicité, ni achat intégré, ni profil en ligne, ni outil d’analytique tiers.</Text>
                   <Text style={styles.privacyHeading}>Données traitées</Text>
                   <Text style={styles.privacyParagraph}>Le meilleur score, les statistiques et les préférences de confort sont enregistrés uniquement sur votre appareil. Le développeur ne reçoit pas ces données et elles ne sont pas synchronisées vers un serveur.</Text>
-                  <Text style={styles.privacyParagraph}>Lorsque le son est activé, l’application demande un fichier audio statique depuis son hébergement. Cette requête peut créer des journaux techniques de connexion chez l’hébergeur, comme une adresse IP et des informations standard de navigateur ou d’appareil.</Text>
+                  <Text style={styles.privacyParagraph}>La musique est incluse dans l’application. Activer le son ne déclenche aucune requête média vers un serveur.</Text>
                   <Text style={styles.privacyHeading}>Vos choix</Text>
                   <Text style={styles.privacyParagraph}>Vous pouvez désactiver le son, les vibrations et le contraste renforcé dans les réglages. La désinstallation de Luma Loop supprime les données locales associées sur l’appareil.</Text>
                   <Text style={styles.privacyHeading}>Évolutions</Text>
