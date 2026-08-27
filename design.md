@@ -19,7 +19,9 @@ L’interface privilégie une utilisation à une main, avec toute action récurr
 
 ## Boucle de jeu et difficulté
 
-La luciole se déplace constamment autour de l’anneau. Lorsque le joueur touche pendant qu’elle est dans la porte, il gagne un point, conserve sa série et la porte se relocalise. En cas de toucher trop tôt ou trop tard, un pétale s’éteint et la série retombe à zéro; la luciole continue immédiatement, ce qui évite une sanction brutale. La partie s’achève après trois erreurs. La première minute conserve une fenêtre de réussite généreuse; la vitesse n’augmente que graduellement et la largeur de porte diminue par paliers prévisibles.
+La luciole se déplace constamment autour de l’anneau. Lorsque le joueur touche pendant qu’elle est dans la porte, il gagne des points, conserve sa série et la porte se relocalise. Une réussite au centre exact de la porte déclenche un **Parfait** et un bonus visible. En cas de toucher trop tôt ou trop tard, un pétale s’éteint et la série retombe à zéro; la luciole continue immédiatement, ce qui évite une sanction brutale. La partie s’achève après trois erreurs.
+
+La difficulté progresse désormais sur cinq niveaux lisibles à l’écran : **Éveil** (4 passages), **Élan** (9), **Éclipse** (15), **Flux** (22) et **Luma**. Chaque niveau augmente nettement la vitesse, resserre l’arc de réussite et augmente la valeur des points; à partir d’Éclipse, le sens de rotation change périodiquement. Une carte de passage annonce chaque niveau pour transformer la progression en objectif concret plutôt qu’en augmentation imperceptible.
 
 ## Parcours clés
 

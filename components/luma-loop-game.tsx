@@ -51,6 +51,7 @@ export function LumaLoopGame() {
   const [orbitAngle, setOrbitAngle] = useState(0);
   const [playfieldSize, setPlayfieldSize] = useState(320);
   const [burst, setBurst] = useState<Burst>("idle");
+  const [levelFlash, setLevelFlash] = useState<string | null>(null);
   const orbitAngleRef = useRef(0);
   const frameRef = useRef<number | null>(null);
   const timestampRef = useRef<number | null>(null);
@@ -90,6 +91,12 @@ export function LumaLoopGame() {
   }, [burst]);
 
   useEffect(() => {
+    if (!levelFlash) return;
+    const timer = setTimeout(() => setLevelFlash(null), 1150);
+    return () => clearTimeout(timer);
+  }, [levelFlash]);
+
+  useEffect(() => {
     if (status !== "playing") {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
       frameRef.current = null;
@@ -102,7 +109,7 @@ export function LumaLoopGame() {
       const delta = Math.min(42, timestamp - previous) / 1000;
       timestampRef.current = timestamp;
       orbitAngleRef.current = normalizeAngle(
-        orbitAngleRef.current + getDifficulty(gameRef.current.score).radiansPerSecond * delta,
+        orbitAngleRef.current + getDifficulty(gameRef.current.hits).radiansPerSecond * gameRef.current.direction * delta,
       );
       setOrbitAngle(orbitAngleRef.current);
       frameRef.current = requestAnimationFrame(tick);
@@ -126,6 +133,7 @@ export function LumaLoopGame() {
     orbitAngleRef.current = 0;
     setOrbitAngle(0);
     setBurst("idle");
+    setLevelFlash(null);
     setGame(createInitialState(Date.now() % 997));
     setStatus("playing");
   }, []);
@@ -135,6 +143,7 @@ export function LumaLoopGame() {
     const outcome = resolveTap(gameRef.current, orbitAngleRef.current);
     setGame(outcome.state);
     setBurst(outcome.hit ? "hit" : "miss");
+    if (outcome.levelUp) setLevelFlash(`NIVEAU ${outcome.nextDifficulty.level}`);
     if (outcome.hit) {
       gameHaptics.hit(profileRef.current.hapticsEnabled);
     } else {
@@ -152,7 +161,7 @@ export function LumaLoopGame() {
     setPlayfieldSize(Math.min(360, Math.max(260, event.nativeEvent.layout.width - 28)));
   };
 
-  const difficulty = getDifficulty(game.score);
+  const difficulty = getDifficulty(game.hits);
   const gateScreenRadius = playfieldSize * 0.34;
   const gateStart = {
     x: playfieldSize / 2 + Math.cos(game.gateAngle - difficulty.gateHalfWidth) * gateScreenRadius,
@@ -206,6 +215,7 @@ export function LumaLoopGame() {
             <Circle cx={playfieldSize / 2 + Math.cos(orbitAngle) * gateScreenRadius - 1.8} cy={playfieldSize / 2 + Math.sin(orbitAngle) * gateScreenRadius - 1.8} r={2.4} fill="#43F3C5" />
           </G>
         </Svg>
+        {levelFlash ? <View pointerEvents="none" style={styles.levelFlash}><Text style={styles.levelFlashTop}>NOUVEAU RYTHME</Text><Text style={styles.levelFlashText}>{levelFlash}</Text><Text style={styles.levelFlashName}>{difficulty.name.toUpperCase()}</Text></View> : null}
       </View>
     </Pressable>
   );
@@ -308,9 +318,10 @@ export function LumaLoopGame() {
           <View style={styles.lives}>{[0, 1, 2].map((item) => <MiniPetal key={item} active={item < game.lives} />)}</View>
           <Pressable accessibilityRole="button" accessibilityLabel="Mettre la partie en pause" onPress={() => setStatus("paused")} style={({ pressed }) => [styles.pauseButton, pressed && styles.settingsPressed]}><View style={styles.pauseBars}><View style={styles.pauseBar}/><View style={styles.pauseBar}/></View></Pressable>
         </View>
-        <View style={styles.comboLine}>{game.combo > 1 ? <Text style={styles.comboText}>SÉRIE × {game.combo}</Text> : <Text style={styles.comboPrompt}>La porte est votre rythme.</Text>}</View>
+          <View style={styles.levelRow}><View style={styles.levelPill}><Text style={styles.levelPillText}>NIVEAU {difficulty.level}</Text></View><Text style={styles.levelName}>{difficulty.name.toUpperCase()}</Text></View>
+          <View style={styles.comboLine}>{game.combo > 1 ? <Text style={styles.comboText}>{game.lastResult === "perfect" ? "PARFAIT · " : "SÉRIE · "}× {game.combo}</Text> : <Text style={styles.comboPrompt}>{difficulty.instruction}</Text>}</View>
         <View style={styles.gameFieldWrap}>{playfield}</View>
-        <View style={styles.gameInstruction}><View style={styles.instructionDot}/><Text style={styles.instructionText}>TOUCHEZ AU PASSAGE DANS L’ARC AMBRE</Text></View>
+        <View style={styles.gameInstruction}><View style={styles.instructionDot}/><Text style={styles.instructionText}>{difficulty.nextLevelAt ? `${difficulty.nextLevelAt - game.hits} PASSAGES VERS LE NIVEAU ${difficulty.level + 1}` : "NIVEAU MAXIMUM · CONTINUEZ LA SÉRIE"}</Text></View>
       </View>
     </SafeAreaView>
   );
@@ -329,7 +340,7 @@ const styles = StyleSheet.create({
   playfieldTouch: { alignSelf: "center", borderRadius: 180 }, playfieldPressed: { transform: [{ scale: 0.985 }] }, playfield: { alignItems: "center", justifyContent: "center", borderRadius: 180, backgroundColor: "#0D1030", borderWidth: 1, borderColor: "#342A58", shadowColor: "#8B5CF6", shadowOpacity: 0.25, shadowRadius: 22, elevation: 6, overflow: "hidden" }, playfieldContrast: { borderWidth: 3, borderColor: "#F4F7FF" },
   primaryButton: { width: "100%", minHeight: 58, borderRadius: 29, justifyContent: "center", alignItems: "center", backgroundColor: "#43F3C5", shadowColor: "#43F3C5", shadowOpacity: 0.36, shadowRadius: 14, elevation: 5 }, primaryButtonText: { color: "#09211F", fontSize: 15, fontWeight: "900", letterSpacing: 2.3 }, secondaryButton: { backgroundColor: "#1A1D3C", borderWidth: 1, borderColor: "#3B365E", shadowOpacity: 0 }, secondaryButtonText: { color: "#D7D4EC" }, buttonPressed: { opacity: 0.88, transform: [{ scale: 0.975 }] }, settingsButton: { paddingVertical: 16, paddingHorizontal: 24, marginTop: 3 }, settingsText: { color: "#AAA7C7", fontSize: 14, fontWeight: "700" }, settingsPressed: { opacity: 0.6 },
   gameScreen: { flex: 1, paddingHorizontal: 24, paddingTop: 10, paddingBottom: 18 }, gameHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 60 }, hudLabel: { color: "#8C88A9", fontSize: 10, letterSpacing: 2, fontWeight: "800" }, hudScore: { color: "#F4F7FF", fontSize: 29, lineHeight: 32, fontWeight: "800", letterSpacing: 1 }, lives: { flexDirection: "row", gap: 7, alignItems: "center" }, petal: { width: 15, height: 20, borderRadius: 12, transform: [{ rotate: "35deg" }] }, petalActive: { backgroundColor: "#FF6B8A", shadowColor: "#FF6B8A", shadowOpacity: 0.8, shadowRadius: 5 }, petalLost: { backgroundColor: "#302A46" }, pauseButton: { width: 46, height: 46, borderRadius: 23, borderWidth: 1, borderColor: "#3B365E", backgroundColor: "#141733", alignItems: "center", justifyContent: "center" }, pauseBars: { flexDirection: "row", gap: 5 }, pauseBar: { width: 4, height: 15, borderRadius: 2, backgroundColor: "#D7D4EC" },
-  comboLine: { height: 34, alignItems: "center", justifyContent: "center" }, comboText: { color: "#FFD166", fontSize: 12, fontWeight: "900", letterSpacing: 1.7 }, comboPrompt: { color: "#817C9C", fontSize: 13 }, gameFieldWrap: { flex: 1, alignItems: "center", justifyContent: "center" }, gameInstruction: { flexDirection: "row", alignItems: "center", alignSelf: "center", gap: 8, paddingVertical: 10 }, instructionDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#FFD166" }, instructionText: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.1, fontWeight: "800", textAlign: "center" },
+  levelRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9, height: 29 }, levelPill: { backgroundColor: "#251D45", borderWidth: 1, borderColor: "#6B51AD", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }, levelPillText: { color: "#C4B5FD", fontSize: 9, letterSpacing: 1.3, fontWeight: "900" }, levelName: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.8, fontWeight: "800" }, comboLine: { height: 30, alignItems: "center", justifyContent: "center" }, comboText: { color: "#FFD166", fontSize: 12, fontWeight: "900", letterSpacing: 1.7 }, comboPrompt: { color: "#817C9C", fontSize: 13 }, gameFieldWrap: { flex: 1, alignItems: "center", justifyContent: "center" }, gameInstruction: { flexDirection: "row", alignItems: "center", alignSelf: "center", gap: 8, paddingVertical: 10 }, instructionDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#FFD166" }, instructionText: { color: "#AAA7C7", fontSize: 10, letterSpacing: 1.1, fontWeight: "800", textAlign: "center" }, levelFlash: { position: "absolute", alignSelf: "center", top: "36%", alignItems: "center", paddingHorizontal: 18, paddingVertical: 13, borderRadius: 18, backgroundColor: "rgba(9, 11, 26, 0.88)", borderWidth: 1, borderColor: "#FFD166" }, levelFlashTop: { color: "#43F3C5", fontSize: 9, fontWeight: "900", letterSpacing: 1.8 }, levelFlashText: { color: "#FFD166", fontSize: 24, fontWeight: "900", letterSpacing: 1.2, marginTop: 3 }, levelFlashName: { color: "#F4F7FF", fontSize: 10, fontWeight: "800", letterSpacing: 1.6, marginTop: 2 },
   settingsScreen: { flex: 1, padding: 28 }, eyebrow: { color: "#43F3C5", fontSize: 11, fontWeight: "900", letterSpacing: 2.7 }, settingsTitle: { color: "#F4F7FF", fontSize: 40, fontWeight: "800", letterSpacing: -1, marginTop: 8 }, settingsSubtitle: { color: "#AAA7C7", fontSize: 16, lineHeight: 23, marginTop: 10, maxWidth: 280 }, settingsCard: { backgroundColor: "#141733", borderRadius: 22, marginTop: 34, paddingHorizontal: 18, borderWidth: 1, borderColor: "#342F52" }, settingRow: { minHeight: 68, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, settingLabel: { color: "#E5E3F4", fontSize: 16, fontWeight: "700" }, divider: { height: 1, backgroundColor: "#302B4B" }, settingsSpacer: { flex: 1 },
   privacyLink: { alignSelf: "center", paddingHorizontal: 18, paddingTop: 17, paddingBottom: 4 }, privacyLinkText: { color: "#AAA7C7", fontSize: 13, fontWeight: "700", textDecorationLine: "underline" },
   endScreen: { flex: 1, paddingHorizontal: 28, paddingTop: 58, paddingBottom: 24, alignItems: "center" }, endTitle: { color: "#F4F7FF", fontSize: 36, letterSpacing: -0.8, fontWeight: "800", marginTop: 9, textAlign: "center" }, endScoreBubble: { width: 176, height: 176, borderRadius: 88, backgroundColor: "#141733", borderWidth: 2, borderColor: "#8B5CF6", alignItems: "center", justifyContent: "center", marginTop: 44, shadowColor: "#8B5CF6", shadowOpacity: 0.36, shadowRadius: 24, elevation: 7 }, endScore: { color: "#FFD166", fontSize: 54, fontWeight: "900", letterSpacing: 1 }, endScoreLabel: { color: "#AAA7C7", fontSize: 10, fontWeight: "900", letterSpacing: 2.4, marginTop: 1 }, endHint: { color: "#AAA7C7", fontSize: 15, lineHeight: 23, marginTop: 28, textAlign: "center" }, endActions: { width: "100%", gap: 12, marginTop: "auto" },

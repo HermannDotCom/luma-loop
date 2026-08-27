@@ -16,3 +16,6 @@
 - [x] Préparer la checklist de conformité Play Store et App Store du MVP.
 - [x] Évaluer le modèle publicitaire et son impact sur la rétention du jeu.
 - [x] Documenter une intégration future de publicités récompensées, sans l’activer dans cette version.
+- [x] Rendre les paliers de difficulté visibles et renforcer leur impact après les premiers scores.
+- [x] Ajouter des modificateurs de rythme et de cible pour renouveler les parties longues.
+- [x] Ajouter des récompenses de progression et des tests d’équilibrage pour la nouvelle courbe.
