@@ -2,7 +2,7 @@
 
 *Dernière mise à jour : 27 août 2026.*
 
-Luma Loop est un jeu de synchronisation jouable sans compte. La version actuelle ne contient ni publicité, ni achat intégré, ni profil en ligne, ni outil d’analytique tiers.
+Luma Loop est un jeu de synchronisation jouable sans compte, édité par **Flash Digital SAS**. La version actuelle ne contient ni publicité, ni achat intégré, ni profil en ligne, ni outil d’analytique tiers.
 
 ## Données traitées par le jeu
 
@@ -22,7 +22,7 @@ Vous pouvez également ouvrir « Publicité future » pour enregistrer une préf
 
 ## Contact
 
-Pour une question relative à cette politique ou au jeu, ouvrez une demande dans le dépôt public du projet : https://github.com/HermannDotCom/luma-loop/issues
+Pour une question relative à cette politique ou au jeu, contactez Flash Digital SAS via le canal d’assistance communiqué sur la fiche store de Luma Loop.
 
 ## Références
 

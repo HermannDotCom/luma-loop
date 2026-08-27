@@ -55,3 +55,9 @@
 - [x] Ajouter une préférence de réduction des animations appliquée aux effets du jeu.
 - [x] Concevoir le protocole de bêta fermée et le formulaire de retours structurés.
 - [x] Valider TypeScript, les tests et les parcours de confort après cette itération.
+- [x] Attribuer la propriété de Luma Loop à Flash Digital SAS dans les documents et la fiche store.
+- [x] Préparer la sélection de 8 à 15 bêta-testeurs sans sollicitation ni envoi automatique.
+- [x] Créer les invitations, le registre de retours et une règle d’analyse des seuils.
+- [ ] Recueillir les coordonnées des testeurs et une autorisation explicite avant toute invitation.
+- [ ] Analyser les retours de bêta puis ajuster les seuils si les données le justifient.
+- [x] Conserver le kit de bêta sans envoi d’invitations ni collecte de coordonnées à ce stade.

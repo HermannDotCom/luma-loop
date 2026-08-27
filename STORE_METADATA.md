@@ -7,6 +7,7 @@ Luma Loop est un jeu d’arcade de synchronisation tactile : la lumière tourne,
 | Élément | App Store | Google Play |
 |---|---|---|
 | Nom | Luma Loop | Luma Loop |
+| Développeur | Flash Digital SAS | Flash Digital SAS |
 | Sous-titre / description courte | Touchez le bon rythme | Touchez la lumière au bon moment. |
 | Catégorie principale | Jeux > Arcade | Jeux > Arcade |
 | Catégorie secondaire | Jeux > Casual | Jeux > Casual |
