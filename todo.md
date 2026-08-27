@@ -61,3 +61,6 @@
 - [ ] Recueillir les coordonnées des testeurs et une autorisation explicite avant toute invitation.
 - [ ] Analyser les retours de bêta puis ajuster les seuils si les données le justifient.
 - [x] Conserver le kit de bêta sans envoi d’invitations ni collecte de coordonnées à ce stade.
+- [x] Extraire et recouper les informations légales de Flash Digital SAS depuis le Kbis et société.com.
+- [x] Ajouter une modale de mentions légales à côté de Confidentialité dans Réglages.
+- [x] Tester le parcours des mentions légales intégrées sans lien externe.
