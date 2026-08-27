@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_COSMETICS, DEFAULT_INVENTORY } from "../lib/game/catalog";
+import { DEFAULT_COSMETICS, DEFAULT_INVENTORY, isOrbitThemeUnlocked, ORBIT_THEMES } from "../lib/game/catalog";
+import { advanceDailyProgress, emptyDailyProgress, getDailyChallenge } from "../lib/game/daily";
 import { angularDistance, createInitialState, getDifficulty, resolveTap, TAU } from "../lib/game/engine";
 
 describe("Luma Loop game engine", () => {
@@ -57,5 +58,18 @@ describe("Luma Loop game engine", () => {
     expect(DEFAULT_COSMETICS.every((item) => item.entitlement === "free")).toBe(true);
     expect(DEFAULT_INVENTORY.memberBenefitsActive).toBe(false);
     expect(DEFAULT_INVENTORY.unlockedIds).toHaveLength(3);
+  });
+
+  it("keeps the daily challenge deterministic and unlocks its reward only at completion", () => {
+    const today = new Date(2026, 7, 27);
+    const challenge = getDailyChallenge(today);
+    expect(getDailyChallenge(today).id).toBe(challenge.id);
+    const started = emptyDailyProgress(challenge, today);
+    const completed = advanceDailyProgress(started, challenge, challenge.target);
+    const dailyTheme = ORBIT_THEMES.find((item) => item.id === "orbit-daybreak");
+    expect(completed.completed).toBe(true);
+    expect(dailyTheme).toBeDefined();
+    expect(isOrbitThemeUnlocked(dailyTheme!, 0, [])).toBe(false);
+    expect(isOrbitThemeUnlocked(dailyTheme!, 0, ["orbit-daybreak"])).toBe(true);
   });
 });

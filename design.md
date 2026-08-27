@@ -17,6 +17,8 @@ L’interface privilégie une utilisation à une main, avec toute action récurr
 | Réglages | Bascules son, haptiques et contraste renforcé. | Adapter l’expérience sans affecter la progression. |
 | Collection future | Emplacement architectural non exposé dans le MVP. | Préparer des cosmétiques sans créer de boutique ni de paiement. |
 
+Les défis et la collection font désormais partie du MVP : un défi journalier est calculé localement à partir de la date de l’appareil. Il demande soit des passages réussis, soit des touches Parfait, et offre le thème **Aube** lorsqu’il est terminé. Les autres thèmes deviennent disponibles à partir de records de 15, 35, 60 et 100 points. Cette progression n’impose aucun compte, paiement, connexion ni temps d’attente.
+
 ## Boucle de jeu et difficulté
 
 La luciole se déplace constamment autour de l’anneau. Lorsque le joueur touche pendant qu’elle est dans la porte, il gagne des points, conserve sa série et la porte se relocalise. Une réussite au centre exact de la porte déclenche un **Parfait** et un bonus visible. En cas de toucher trop tôt ou trop tard, un pétale s’éteint et la série retombe à zéro; la luciole continue immédiatement, ce qui évite une sanction brutale. La partie s’achève après trois erreurs.

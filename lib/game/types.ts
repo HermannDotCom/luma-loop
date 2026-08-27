@@ -1,4 +1,6 @@
-export type RunStatus = "home" | "playing" | "paused" | "gameover" | "settings";
+import type { DailyProgress } from "./daily";
+
+export type RunStatus = "home" | "playing" | "paused" | "gameover" | "settings" | "collection" | "daily";
 
 export type GameState = {
   score: number;
@@ -38,4 +40,7 @@ export type PlayerProfile = {
   hapticsEnabled: boolean;
   soundEnabled: boolean;
   highContrast: boolean;
+  equippedOrbitId: string;
+  unlockedThemeIds: string[];
+  dailyProgress?: DailyProgress;
 };

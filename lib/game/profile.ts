@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { getDailyChallenge, emptyDailyProgress } from "./daily";
 import type { PlayerProfile } from "./types";
 
 const PROFILE_KEY = "luma-loop:player-profile:v1";
@@ -9,6 +10,9 @@ export const DEFAULT_PROFILE: PlayerProfile = {
   hapticsEnabled: true,
   soundEnabled: true,
   highContrast: false,
+  equippedOrbitId: "orbit-iris",
+  unlockedThemeIds: ["orbit-iris"],
+  dailyProgress: emptyDailyProgress(getDailyChallenge()),
 };
 
 export async function loadProfile(): Promise<PlayerProfile> {

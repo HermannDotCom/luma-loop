@@ -4,6 +4,8 @@ Luma Loop est un MVP de jeu mobile d’arcade tactile conçu pour les sessions c
 
 La progression est découpée en cinq niveaux visibles : Éveil, Élan, Éclipse, Flux et Luma. Les portes se resserrent, la vitesse augmente et le sens de l’orbite finit par s’inverser. Les touches au centre de la porte reçoivent le bonus **Parfait**, ce qui crée un objectif de maîtrise au-delà du simple score.
 
+Le jeu ajoute aussi un **défi quotidien** conservé localement : il renouvelle automatiquement un objectif court de précision ou de passages et déverrouille le thème Aube à son achèvement. La collection contient ensuite des thèmes supplémentaires, déblocables par les meilleurs scores de 15, 35, 60 et 100 points. Les thèmes changent l’apparence de l’orbite sans modifier les règles du jeu.
+
 ## Démarrer le projet
 
 Installez Node.js 22 et pnpm, puis exécutez les commandes suivantes depuis la racine du dépôt.

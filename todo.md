@@ -19,3 +19,8 @@
 - [x] Rendre les paliers de difficulté visibles et renforcer leur impact après les premiers scores.
 - [x] Ajouter des modificateurs de rythme et de cible pour renouveler les parties longues.
 - [x] Ajouter des récompenses de progression et des tests d’équilibrage pour la nouvelle courbe.
+- [x] Définir et persister un défi quotidien renouvelé localement.
+- [x] Ajouter un écran de défi quotidien avec récompense de collection.
+- [x] Créer des thèmes d’orbite déblocables par record atteint.
+- [x] Ajouter un écran de collection permettant d’équiper un thème débloqué.
+- [x] Tester les conditions de défi, de déblocage et d’équipement des thèmes.
